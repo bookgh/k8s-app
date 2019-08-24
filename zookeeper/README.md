@@ -29,7 +29,7 @@ the RPM distribution that users should be familiar with.
     Date:     2019/08/24 15:50
     Version:  zookeeper:3.4.14
     Image:
-      bookgh/k8s-zookeeper:3.4.14-ubuntu 
+      bookgh/k8s-zookeeper:3.4.14-ubuntu
       bookgh/k8s-zookeeper:3.4.14-debian
 
 ## Configuration

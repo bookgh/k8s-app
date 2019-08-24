@@ -38,6 +38,7 @@ kubectl apply -f ./dynamic-nfs-pv.yaml
 # 验证
 kubectl get pod -n kube-system | grep nfs
 ```
+----
 
 ### zookeeper
 
@@ -75,6 +76,8 @@ kubectl expose po zk-2 --port=2181 --target-port=2181 --name=zk-2 --selector=zkI
 # 查看服务端口
 get svc | grep zk-
 ```
+
+----
 
 ### kafka
 
