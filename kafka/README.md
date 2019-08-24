@@ -58,7 +58,7 @@ directory.
 ## Headless Service
 The Kafka Stateful Set requires a Headless Service to control the network domain 
 for the Kafka brokers. The yaml below creates a Headless Service that allows 
-brokers to be discovered and exposes the 9093 port for client connections.
+brokers to be discovered and exposes the 9092 port for client connections.
 
 ```yaml
 apiVersion: v1
@@ -69,7 +69,7 @@ metadata:
     app: kafka
 spec:
   ports:
-  - port: 9093
+  - port: 9092
     name: server
   clusterIP: None
   selector:
@@ -103,7 +103,7 @@ spec:
 
  ```yaml
  kafka-server-start.sh /opt/kafka/config/server.properties --override broker.id=${HOSTNAME##*-} \
-           --override listeners=PLAINTEXT://:9093 \
+           --override listeners=PLAINTEXT://:9092 \
            --override zookeeper.connect=zk-0.zk-svc.default.svc.cluster.local:2181,zk-1.zk-svc.default.svc.cluster.local:2181,zk-2.zk-svc.default.svc.cluster.local:2181 \
            --override auto.create.topics.enable=true \
            --override auto.leader.rebalance.enable=true \
@@ -193,7 +193,7 @@ spec:
 - Note that the `broker.id` is extracted from the ordinal index of the 
 StatefulSet's Pods.
 - The `listeners` configuration must specify the port indicated by the headless 
-service (9093 in this case).
+service (9092 in this case).
 - The `zookeeper.connect` string is a comma separated list of the `host:port` 
 pairs of the ZooKeeper servers in the ensemble.
 
@@ -305,7 +305,7 @@ From the command line create a topic using `kafka-topics.sh`
 
 Run the console consumer as below.
 ```shell
-> kafka-console-consumer.sh --topic test --bootstrap-server localhost:9093
+> kafka-console-consumer.sh --topic test --bootstrap-server localhost:9092
 ```
 
 Use `kubectl exec` to execute a bash shell on another one of the brokers. You 
@@ -320,7 +320,7 @@ Run the console producer and generate a few messages by typing into `stdin`.
 Every time you press `Enter` you will flush a message to the consumer.
 
 ```shell
-> kafka-console-producer.sh --topic test --broker-list localhost:9093
+> kafka-console-producer.sh --topic test --broker-list localhost:9092
 hello
 I like kafka
 goodbye
@@ -330,7 +330,7 @@ You will see the messages on the console in which the console consumer is
 running.
 
 ```shell
-> kafka-console-consumer.sh --topic test --bootstrap-server localhost:9093
+> kafka-console-consumer.sh --topic test --bootstrap-server localhost:9092
 hello
 I like kafka
 goodbye
