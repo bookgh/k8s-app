@@ -16,6 +16,19 @@ spec:
     app: zk
 ---
 apiVersion: v1
+kind: Service
+metadata:
+  name: zk-client
+  labels:
+    app: zk-client
+spec:
+  ports:
+  - port: 2181
+    name: client
+  selector:
+    app: zk
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: zk-cm
