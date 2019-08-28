@@ -5,6 +5,10 @@ set -euo pipefail
 eval JAVA_OPTS=\"${JAVA_OPTS}\"
 eval CLASSPATH=\"${CLASSPATH}\"
 
+# local_ip
+local_ip="$(/bin/hostname -i)"
+sed -i "s/{local.ip}/$local_ip/" ${HZ_HOME}/hazelcast.xml
+
 # cluster
 CLUSTER_NET=${CLUSTER_NET:-127.0.0.1}
 sed -i "s/{trusted.net}/$CLUSTER_NET/" ${HZ_HOME}/hazelcast.xml

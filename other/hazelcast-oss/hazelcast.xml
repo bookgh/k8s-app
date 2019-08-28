@@ -30,8 +30,8 @@
             <discovery-strategies>
             </discovery-strategies>
         </join>
-        <interfaces enabled="false">
-            <interface>192.168.2.72</interface>
+        <interfaces enabled="true">
+            <interface>{local.ip}</interface>
         </interfaces>
         <ssl enabled="false"/>
         <socket-interceptor enabled="false"/>
