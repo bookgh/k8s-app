@@ -2,19 +2,16 @@
 
 set -euo pipefail
 
-#if [ -n "${MANCENTER_URL}" ]; then
-#  sed -i "10 s#false#true#" ${HZ_HOME}/bin/hazelcast.xml
-#  sed -i "10 s#{hazelcast.mancenter.url}#$MANCENTER_URL#" ${HZ_HOME}/bin/hazelcast.xml
-#fi
-# cluster
-if [ -n "${CLUSTER_NET}" ];then
-  sed -i "s/{trusted.net}/$CLUSTER_NET/" ${HZ_HOME}/bin/hazelcast.xml
-else
-  sed -i "s/{trusted.net}/127.0.0.1/" ${HZ_HOME}/bin/hazelcast.xml
-fi
-
 eval JAVA_OPTS=\"${JAVA_OPTS}\"
 eval CLASSPATH=\"${CLASSPATH}\"
+
+# cluster
+CLUSTER_NET=${CLUSTER_NET:-127.0.0.1}
+sed -i "s/{trusted.net}/$CLUSTER_NET/" ${HZ_HOME}/hazelcast.xml
+
+# cache group
+CACHE_GROUP=${CACHE_GROUP:-mango-dev}
+sed -i "s/{group.name}/$CACHE_GROUP/" ${HZ_HOME}/hazelcast.xml
 
 if [ -n "${CLASSPATH}" ]; then 
   export CLASSPATH="${CLASSPATH_DEFAULT}:${CLASSPATH}"
