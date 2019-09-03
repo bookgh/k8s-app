@@ -14,7 +14,7 @@ COPY sources.list.debian /etc/apt/sources.list
 
 RUN set -x \ 
     && apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates dirmngr gnupg netcat wget \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates dirmngr gnupg netcat wget procps iputils-ping net-tools \
     && wget -q "https://archive.apache.org/dist/zookeeper/$ZK_DIST/$ZK_DIST.tar.gz" \
     && wget -q "https://archive.apache.org/dist/zookeeper/$ZK_DIST/$ZK_DIST.tar.gz.asc" \
     && wget -q "https://archive.apache.org/dist/zookeeper/KEYS" \
@@ -41,7 +41,7 @@ RUN set -x \
     /opt/zookeeper/$ZK_DIST.jar.asc \
     /opt/zookeeper/$ZK_DIST.jar.md5 \
     /opt/zookeeper/$ZK_DIST.jar.sha1 \
-    && apt-get autoremove -y wget \
+    && apt-get autoremove -y wget gnupg \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy configuration generator script to bin

@@ -12,6 +12,7 @@ spec:
   clusterIP: None
   selector:
     app: kafka
+
 ---
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
@@ -22,6 +23,7 @@ spec:
     matchLabels:
       app: kafka
   minAvailable: 2
+
 ---
 apiVersion: apps/v1beta1
 kind: StatefulSet
@@ -60,7 +62,7 @@ spec:
       containers:
       - name: k8skafka
         imagePullPolicy: Always
-        image: bookgh/k8s-kafka:2.12-1.1.0-debian
+        image: 192.168.2.30/kubernetes/kafka:2.12-1.1.0-debian
         resources:
           requests:
             memory: "1Gi"
@@ -82,7 +84,8 @@ spec:
         command:
         - sh
         - -c
-        - "exec kafka-server-start.sh /opt/kafka/config/server.properties --override broker.id=${HOSTNAME##*-} \
+        - "exec kafka-server-start.sh /opt/kafka/config/server.properties \
+          --override broker.id=${HOSTNAME##*-} \
           --override listeners=PLAINTEXT://:9092 \
           --override zookeeper.connect=zk-0.zk-svc.default.svc.cluster.local:2181,zk-1.zk-svc.default.svc.cluster.local:2181,zk-2.zk-svc.default.svc.cluster.local:2181 \
           --override log.dir=/var/lib/kafka \
@@ -145,7 +148,7 @@ spec:
           --override fetch.purgatory.purge.interval.requests=1000 \
           --override group.max.session.timeout.ms=300000 \
           --override group.min.session.timeout.ms=6000 \
-          --override inter.broker.protocol.version=1.1.0-IV0 \
+          --override inter.broker.protocol.version=1.1.0 \
           --override log.cleaner.backoff.ms=15000 \
           --override log.cleaner.dedupe.buffer.size=134217728 \
           --override log.cleaner.delete.retention.ms=86400000 \
