@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastdfs-tracker-svc
+  labels:
+    app: fastdfs-tracker-svc
+spec:
+  ports:
+  - port: 22122
+    name: tracker
+  # clusterIP: None
+  selector:
+    app: fastdfs-tracker
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fastdfs-tracker
+spec:
+  serviceName: fastdfs-tracker-svc
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fastdfs-tracker
+  template:
+    metadata:
+      labels:
+        app: fastdfs-tracker
+    spec:
+      containers:
+      - name: tracker
+        image: 192.168.2.30/kubernetes/fastdfs:5.11 
+        env:
+        - name: FASTDFS_MODE
+          value: tracker
+        ports:
+        - containerPort: 22122
+          name: tracker
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastdfs-storage-svc
+  labels:
+    app: fastdfs-storage-svc
+spec:
+  ports:
+  - port: 23000
+    name: storage
+  - port: 8888
+    name: nginx
+  type: NodePort
+  selector:
+    app: fastdfs-storage
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fastdfs-storage-deploy
+spec:
+  serviceName: fastdfs-storage-svc
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fastdfs-storage
+  template:
+    metadata:
+      labels:
+        app: fastdfs-storage
+    spec:
+      containers:
+      - name: storage
+        image: 192.168.2.30/kubernetes/fastdfs:5.11 
+        env:
+        - name: FASTDFS_MODE
+          value: "storage"
+        - name: TRACKER_SERVER_NUM
+          value: '2'
+        ports:
+        - containerPort: 23000
+          name: storage
+        - containerPort: 8888
+          name: nginx
+        volumeMounts:
+        - name: data
+          mountPath: /data/storage
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteMany"]
+      storageClassName: "nfs-expample"
+      resources:
+        requests:
+          storage: 100Gi
+
+#        volumeMounts:
+#        - name: storage-data
+#          mountPath: "/data/storage"
+#          readOnly: false
+#          subPath: fastdfs-storage
+#      volumes:
+#      - name: storage-data
+#        nfs:
+#          server: 192.168.2.71
+#          path: "/data/expample"

@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastdfs-tracker-svc
+  labels:
+    app: fastdfs-tracker-svc
+spec:
+  ports:
+  - port: 22122
+    name: tracker
+  # clusterIP: None
+  selector:
+    app: fastdfs-tracker
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fastdfs-tracker
+spec:
+  serviceName: fastdfs-tracker-svc
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fastdfs-tracker
+  template:
+    metadata:
+      labels:
+        app: fastdfs-tracker
+    spec:
+      containers:
+      - name: tracker
+        image: 192.168.2.30/kubernetes/fastdfs:5.11 
+        env:
+        - name: FASTDFS_MODE
+          value: tracker
+        ports:
+        - containerPort: 22122
+          name: tracker
+        readinessProbe:
+          tcpSocket:
+            port: 22122
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 22122
+          initialDelaySeconds: 15
+          periodSeconds: 20

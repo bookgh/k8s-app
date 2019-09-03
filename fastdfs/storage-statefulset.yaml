@@ -1,0 +1,67 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastdfs-storage-svc
+  labels:
+    app: fastdfs-storage-svc
+spec:
+  ports:
+  - port: 8888
+    name: nginx
+    nodePort: 28888
+  type: NodePort
+  selector:
+    app: fastdfs-storage
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fastdfs-storage-deploy
+spec:
+  serviceName: fastdfs-storage-svc
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fastdfs-storage
+  template:
+    metadata:
+      labels:
+        app: fastdfs-storage
+    spec:
+      containers:
+      - name: storage
+        image: 192.168.2.30/kubernetes/fastdfs:5.11 
+        env:
+        - name: FASTDFS_MODE
+          value: "storage"
+        - name: TRACKER_SERVER_NUM
+          value: '2'
+        ports:
+        - containerPort: 23000
+          name: storage
+        - containerPort: 8888
+          name: nginx
+        readinessProbe:
+          tcpSocket:
+            port: 23000
+          initialDelaySeconds: 5
+          periodSeconds: 20
+        livenessProbe:
+          tcpSocket:
+            port: 23000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        volumeMounts:
+        - name: data
+          mountPath: /data/storage
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteMany"]
+      storageClassName: "nfs-expample"
+      resources:
+        requests:
+          storage: 100Gi

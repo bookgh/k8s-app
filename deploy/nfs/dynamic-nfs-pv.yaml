@@ -74,13 +74,13 @@ spec:
               # 此处供应者名字供storageclass调用
               value: nfs-provisioner-01
             - name: NFS_SERVER
-              value: 192.168.0.75
+              value: 192.168.2.71
             - name: NFS_PATH
               value: /data/expample
       volumes:
         - name: nfs-client-root
           nfs:
-            server: 192.168.0.75
+            server: 192.168.2.71
             path: /data/expample
 
 ---
