@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastdfs-storage-svc
+  labels:
+    app: fastdfs-storage-svc
+spec:
+  ports:
+  - port: 23000
+    name: storage
+  # clusterIP: None
+  selector:
+    app: fastdfs-storage
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastdfs-storage-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fastdfs-storage
+  template:
+    metadata:
+      labels:
+        app: fastdfs-storage
+    spec:
+      containers:
+      - name: fastdfs-storage
+        image: 192.168.2.30/kubernetes/fastdfs:5.11 
+        env:
+        - name: FASTDFS_MODE
+          value: "storage"
+        - name: TRACKER_SERVER_NUM
+          value: '2'
+        ports:
+        - containerPort: 23000
+          name: storage
+        volumeMounts:
+        - name: storage-data
+          mountPath: "/data/storage"
+          readOnly: false
+          subPath: fastdfs-storage
+      volumes:
+      - name: storage-data
+        nfs:
+          server: 192.168.2.71
+          path: "/data/expample"

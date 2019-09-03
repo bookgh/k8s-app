@@ -3,17 +3,16 @@
 # set -x
 
 # 注释旧的配置
-sed -i "s|tracker_server=|# &|g" /etc/fdfs/client.conf
-sed -i "s|tracker_server=|# &|g" /etc/fdfs/storage.conf
-sed -i "s|tracker_server=|# &|g" /etc/fdfs/mod_fastdfs.conf
+sed -i "s|^tracker_server=|# &|g" /etc/fdfs/client.conf
+sed -i "s|^tracker_server=|# &|g" /etc/fdfs/storage.conf
+sed -i "s|^tracker_server=|# &|g" /etc/fdfs/mod_fastdfs.conf
 
 # 配置 TRACKER_SERVER
-TRACKER_SERVER_NUM=${TRACKER_SERVER_NUM:-2}
-TRACKER_NUM=$((TRACKER_SERVER_NUM-1))
-for ((i=$TRACKER_NUM; i>=0; i--)); do
-    sed -i "/# tracker_server=/a tracker_server=fastdfs-tracker-${i}.fastdfs-tracker-svc:22122" /etc/fdfs/client.conf
-    sed -i "/# tracker_server=/a tracker_server=fastdfs-tracker-${i}.fastdfs-tracker-svc:22122" /etc/fdfs/storage.conf
-    sed -i "/# tracker_server=/a tracker_server=fastdfs-tracker-${i}.fastdfs-tracker-svc:22122" /etc/fdfs/mod_fastdfs.conf
+TRACKER_SERVER=${TRACKER_SERVER:tracker}
+for node in $TRACKER_SERVER; do
+    sed -i "/# tracker_server=/a tracker_server=${node}" /etc/fdfs/client.conf
+    sed -i "/# tracker_server=/a tracker_server=${node}" /etc/fdfs/storage.conf
+    sed -i "/# tracker_server=/a tracker_server=${node}" /etc/fdfs/mod_fastdfs.conf
 done
 
 if [ "$FASTDFS_MODE" = "storage" ]; then
@@ -75,5 +74,5 @@ for ((i=0;i<=5;i++)); do
     else
       echo "$FASTDFS_MODE status: $i"
     fi
-    sleep 2
+    sleep 5
 done

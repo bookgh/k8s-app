@@ -1,0 +1,45 @@
+version: '3'
+services:
+  tracker0:
+    hostname: tracker0
+    container_name: tracker0
+    image: 192.168.0.75/library/fastdfs-compose:5.11
+    environment:
+      - FASTDFS_MODE=tracker
+      - TRACKER_SERVER=tracker0:22122 tracker1:22122
+    ports:
+      - 22122:22122 
+ 
+  tracker1:
+    hostname: tracker1
+    container_name: tracker1
+    image: 192.168.0.75/library/fastdfs-compose:5.11
+    environment:
+      - FASTDFS_MODE=tracker
+      - TRACKER_SERVER=tracker0:22122 tracker1:22122
+    ports:
+      - 22123:22122
+
+  storage0:
+    hostname: storage0
+    container_name: storage0
+    image: 192.168.0.75/library/fastdfs-compose:5.11
+    environment:
+      - FASTDFS_MODE=storage
+      - TRACKER_SERVER=tracker0:22122 tracker1:22122
+    volumes: 
+      - /var/fdfs/storage:/data/storage
+    ports:
+      - 8888:8888
+
+  storage1:
+    hostname: storage1
+    container_name: storage1
+    image: 192.168.0.75/library/fastdfs-compose:5.11
+    environment:
+      - FASTDFS_MODE=storage
+      - TRACKER_SERVER=tracker0:22122 tracker1:22122
+    volumes:
+      - /var/fdfs/storage1:/data/storage
+    ports:
+      - 8889:8888
