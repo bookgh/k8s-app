@@ -19,7 +19,7 @@ done
 if [ "$FASTDFS_MODE" = "storage" ]; then
   PORT=23000
   FASTDFS_MODE="storage"
-  mkdir -p $STORAGE_DATA
+  mkdir -p $STORAGE_DATA/data
 
   sed -i "s|base_path=.*|base_path=$STORAGE_DATA|g" /etc/fdfs/client.conf
   sed -i "s|base_path=.*|base_path=$STORAGE_DATA|g" /etc/fdfs/storage.conf
@@ -28,10 +28,21 @@ if [ "$FASTDFS_MODE" = "storage" ]; then
   sed -i "s|group_count =.*|group_count = 1|g" /etc/fdfs/mod_fastdfs.conf
   sed -i "s|url_have_group_name = .*|url_have_group_name = true|g" /etc/fdfs/mod_fastdfs.conf
   echo -e "\n[group1]\ngroup_name=group1\nstorage_server_port=23000\nstore_path_count=1\nstore_path0=$STORAGE_DATA" >>/etc/fdfs/mod_fastdfs.conf
+
+  # wait tracker start up
+  for ((i=0;i<=5;i++)); do
+    nc -vw 3 fastdfs-tracker-1.fastdfs-tracker-svc -z 22122 >& /dev/null
+    if test $? -ne 0; then
+      i=0
+      sleep 2
+      echo "wiat start up tracker: fastdfs-tracker-1.fastdfs-tracker-svc:22122 ."
+    fi
+  done
+
 elif [ "$FASTDFS_MODE" = "tracker" ]; then
   PORT=22122
   FASTDFS_MODE="tracker"
-  mkdir -p $TRACKER_DATA $STORAGE_DATA
+  mkdir -p $TRACKER_DATA/data $STORAGE_DATA/data
 
   sed -i "s|base_path=.*|base_path=$STORAGE_DATA|g" /etc/fdfs/client.conf
   sed -i "s|base_path=.*|base_path=$TRACKER_DATA|g" /etc/fdfs/tracker.conf

@@ -1,18 +1,58 @@
 #!/bin/bash
 
-# service check
-if [ "$FASTDFS_MODE" == "storage" ]; then
-    info=$(fdfs_monitor /etc/fdfs/storage.conf | grep $HOSTNAME | awk '{print $NF}')
-    if [ "$info" == "ACTIVE" ]; then
-        exit 0
-    else
-        exit 1
+function status(){
+    if [ "$FASTDFS_MODE" = "storage" ]; then
+        PORT=23000
+        # wait create storage data directory
+        for ((i=0;i<=2;i++)); do
+            if [ ! -d "${STORAGE_DATA}/data/FF/FF" ]; then
+                i=0
+                echo "wait create storage data directory: ${STORAGE_DATA}/data . "
+                sleep 3
+            fi
+        done
+    elif [ "$FASTDFS_MODE" = "tracker" ]; then
+        PORT=22122
     fi
-elif [ "$FASTDFS_MODE" == "tracker" ]; then
-    fdfs_monitor /etc/fdfs/client.conf -h $(hostname -i)
+
+    # check service status
+    nc -vw 3 localhost -z $PORT > /dev/null 2>&1
     if [ $? -eq 0 ]; then
-        exit 0
+        return 0
     else
-        exit 1
+        return 1
     fi
-fi
+}
+
+function monitor (){
+    if [ "$FASTDFS_MODE" == "tracker" ]; then
+        nc -vw 3 fastdfs-storage-0.fastdfs-storage-svc -z 23000 >& /dev/null
+        if test $? -eq 0; then
+            storage_num=$(fdfs_monitor /etc/fdfs/client.conf -h $(hostname -i) | grep 'ip_addr' | wc -l)
+            if [ $storage_num -gt $STORAGE_SERVER_NUM ]; then
+                return 1
+            else
+                return 0
+            fi
+        fi
+    fi
+
+    # starage
+    if [ "$FASTDFS_MODE" == "storage" ]; then
+        info=$(fdfs_monitor /etc/fdfs/storage.conf | grep $HOSTNAME | awk '{print $NF}')
+        if [ "$info" == "ACTIVE" ]; then
+            return 0
+        else
+            return 1
+        fi
+    fi
+}
+
+case $1 in
+    monitor)
+        monitor ;;
+    status)
+        status ;;
+    *)
+        echo "Usage: $0 {status|monitor}" ;;
+esac

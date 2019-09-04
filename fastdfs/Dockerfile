@@ -7,8 +7,11 @@ ENV LIBFASTCOMMON_VER V1.0.39
 ENV BUILD_ROOT /opt
 ENV STORAGE_DATA /data/storage
 ENV TRACKER_DATA /data/tracker
+ENV USER fastdfs
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+RUN addgroup -g 1000 -S $USER \
+   && adduser -u 1000 -D -S -G $USER $USER \
+   && sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
    && apk add --no-cache --virtual .build-deps gcc libc-dev make openssl-dev pcre-dev zlib-dev linux-headers libxslt-dev gd-dev geoip-dev perl-dev libedit-dev mercurial bash alpine-sdk findutils git \
    && cd $BUILD_ROOT \
    && git clone --branch $LIBFASTCOMMON_VER --depth 1 https://github.com/happyfish100/libfastcommon.git ${BUILD_ROOT}/libfastcommon \
@@ -32,16 +35,19 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
    && ./configure --add-module=${BUILD_ROOT}/fastdfs-nginx-module/src \
    && make && make install \
    && cp ${BUILD_ROOT}/fastdfs-nginx-module/src/mod_fastdfs.conf /etc/fdfs/ \
+   && mkdir /data \
+   && chown $USER:$USER -Rf /etc/fdfs /usr/local/nginx /data \
    && cd ${BUILD_ROOT} \
    && rm -rf ${BUILD_ROOT}/* \
    && apk del .build-deps \
    && apk add --no-cache bash pcre
 
 COPY start.sh /usr/bin/start.sh
+COPY fdfsOK.sh /usr/bin/fdfsOK.sh
 COPY nginx.conf /usr/local/nginx/conf/nginx.conf
 
-RUN chmod +x /usr/bin/start.sh
+RUN chmod +x /usr/bin/start.sh /usr/bin/fdfsOK.sh
 
-EXPOSE 22122 23000 8888 80
+EXPOSE 22122 23000 8888
 
 CMD ["/usr/bin/start.sh"]

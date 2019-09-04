@@ -11,5 +11,10 @@ build:
 push:
 	docker push ${DOCKER_IMAGE}
 
+fastdfs.yaml: .fastdfs.yaml.in
+	@cat .fastdfs.yaml.in | sed \
+		-e  "s|%DOCKER_IMAGE%|$(DOCKER_IMAGE)|" \
+		> fastdfs.yaml && echo "created $@"
+
 clean:
 	docker rmi 192.168.2.30/kubernetes/fastdfs:5.11
