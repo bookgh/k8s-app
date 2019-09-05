@@ -1,0 +1,150 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: storm-svc
+  labels:
+    app: storm-svc
+spec:
+  ports:
+  - port: 6700
+    name: port1
+    targetPort: 6700
+  - port: 6701
+    name: port2
+    targetPort: 6701
+  - port: 6702
+    name: port3
+    targetPort: 6702
+  - port: 6703
+    name: port4
+    targetPort: 6703
+  - port: 6627
+    name: port6
+    targetPort: 6627
+  selector:
+    app: storm-pod
+  clusterIP: None
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: storm-ui
+  labels:
+    app: storm-ui
+spec:
+  ports:
+  - port: 8080
+    name: port5
+    targetPort: 8080
+  type: NodePort
+  selector:
+    app: storm-pod
+ 
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: 
+  name: storm
+  namespace: default
+spec:
+  serviceName: storm-svc
+  replicas: 3 
+  selector: 
+    matchLabels:
+      app: storm-pod
+  template:
+    metadata:
+      labels:
+        app: storm-pod
+    spec:
+      containers:
+      - name: storm-nimbus
+        imagePullPolicy: IfNotPresent
+        image: storm:1.2.2
+        ports:
+        - containerPort: 6700
+          name: one
+        - containerPort: 6701
+          name: two  
+        - containerPort: 6702
+          name: three
+        - containerPort: 6703
+          name: four
+        - containerPort: 8080
+          name: five 
+        - containerPort: 6627
+          name: nine  
+        command:
+        - /bin/bash
+        - /apache-storm-1.2.2/bin/storm
+        - nimbus
+        - -c
+        - storm.zookeeper.servers=["zk-0.zk-svc.default.svc.cluster.local","zk-1.zk-svc.default.svc.cluster.local","zk-2.zk-svc.default.svc.cluster.local"]
+        - -c
+        - nimbus.seeds=["storm-0.storm-svc.default.svc.cluster.local","storm-1.storm-svc.default.svc.cluster.local","storm-2.storm-svc.default.svc.cluster.local"] 
+        volumeMounts:
+        - name: storm-data
+          mountPath: /apache-storm-1.2.2/storm-local/       
+      - name: storm-supervisor
+        imagePullPolicy: IfNotPresent
+        image: storm:1.2.2
+        ports:
+        - containerPort: 6700
+          name: one
+        - containerPort: 6701
+          name: two
+        - containerPort: 6702
+          name: three
+        - containerPort: 6703
+          name: four
+        - containerPort: 8080
+          name: five
+        - containerPort: 6627
+          name: nine
+        command:
+        - /bin/bash
+        - /apache-storm-1.2.2/bin/storm
+        - supervisor
+        - -c
+        - storm.zookeeper.servers=["zk-0.zk-svc.default.svc.cluster.local","zk-1.zk-svc.default.svc.cluster.local","zk-2.zk-svc.default.svc.cluster.local"]
+        - -c
+        - nimbus.seeds=["storm-0.storm-svc.default.svc.cluster.local","storm-1.storm-svc.default.svc.cluster.local","storm-2.storm-svc.default.svc.cluster.local"]
+        volumeMounts:
+        - name: storm-data
+          mountPath: /apache-storm-1.2.2/storm-local/
+
+      - name: storm-ui
+        imagePullPolicy: IfNotPresent
+        image: storm:1.2.2
+        ports:
+        - containerPort: 6700
+          name: one
+        - containerPort: 6701
+          name: two
+        - containerPort: 6702
+          name: three
+        - containerPort: 6703
+          name: four
+        - containerPort: 8080
+          name: five
+        - containerPort: 6627
+          name: nine
+        command:
+        - /bin/bash
+        - /apache-storm-1.2.2/bin/storm
+        - ui
+        volumeMounts:
+        - name: storm-data
+          mountPath: /apache-storm-1.2.2/storm-local/
+
+  volumeClaimTemplates:
+  - metadata:
+      name: storm-data
+    spec:
+      accessModes:
+      - "ReadWriteOnce"
+      resources:
+        requests:
+          storage: "100Gi"
+      storageClassName: "nfs-expample"
