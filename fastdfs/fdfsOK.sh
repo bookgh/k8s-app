@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# 容器启动后检测如果成功继续启动下一个副本，否则下一个副本不会启动
 function status(){
     if [ "$FASTDFS_MODE" = "storage" ]; then
         PORT=23000
@@ -24,9 +25,11 @@ function status(){
     fi
 }
 
+# 容器运行中定时检查健康状态,异常则重启pod
 function monitor (){
+    # tracker
     if [ "$FASTDFS_MODE" == "tracker" ]; then
-        nc -vw 3 fastdfs-storage-0.fastdfs-storage-svc -z 23000 >& /dev/null
+        nc -vw 3 fastdfs-storage-svc -z 23000 >& /dev/null
         if test $? -eq 0; then
             storage_num=$(fdfs_monitor /etc/fdfs/client.conf -h $(hostname -i) | grep 'ip_addr' | wc -l)
             if [ $storage_num -gt $STORAGE_SERVER_NUM ]; then

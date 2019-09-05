@@ -157,7 +157,7 @@ spec:
           - name: HZ_DATA
             value: /data/hazelcast
           volumeMounts:
-            - name: "hazelcast-data"
+            - name: "hazelcast-conf"
               mountPath: /data/hazelcast
           resources:
             limits:
@@ -167,7 +167,7 @@ spec:
               cpu: 500m
               memory: 576Mi
       volumes:
-      - name: "hazelcast-data"
+      - name: "hazelcast-conf"
         configMap:
           name: "hazelcast-config"
           defaultMode: 0744

@@ -68,6 +68,8 @@ spec:
   - port: 8888
     name: nginx
     nodePort: 28888
+  - port: 23000
+    name: storage
   type: NodePort
   selector:
     app: fastdfs-storage
