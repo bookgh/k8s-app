@@ -2,31 +2,6 @@
 
 # set -x
 
-function stop_signal(){
-    # stop service and clean up here
-    echo "stopping fdfs_${FASTDFS_MODE}d"
-    if [ "$FASTDFS_MODE" == 'tracker' ]; then
-        fdfs_trackerd /etc/fdfs/tracker.conf stop
-        if [ $? -ne 0 ]; then
-            kill -SIGTERM $(cat ${TRACKER_DATA}/data/fdfs_trackerd.pid)
-        fi
-    elif [ "$FASTDFS_MODE" == 'storage' ]; then
-        fdfs_storaged /etc/fdfs/storage.conf stop
-        if [ $? -ne 0 ]; then
-            kill -SIGTERM $(cat ${STORAGE_DATA}/data/fdfs_storaged.pid)
-        fi
-        /usr/local/nginx/sbin/nginx -s stop
-        if [ $? -ne 0 ]; then
-            kill -SIGTERM $(cat /data/storage/nginx.pid)
-        fi
-        echo "stopping nginx"
-    fi
-    echo "exited $0"
-}
-
-# 退出信号
-trap "stop_signal" SIGKILL SIGTERM SIGHUP SIGINT EXIT
-
 # 注释旧的配置
 sed -i "s|tracker_server=|# &|g" /etc/fdfs/client.conf
 sed -i "s|tracker_server=|# &|g" /etc/fdfs/storage.conf
@@ -91,6 +66,16 @@ if [ "$FASTDFS_MODE" = "storage" ]; then
     fi
   done
 fi
+
+# exit
+function shut_down() {
+    echo shutting down
+    PID=$(ps -ef | grep "fdfs_${FASTDFS_MODE}d" | grep -v grep | awk '{print $1}' )
+    kill -SIGTERM $PID
+    exit 0
+}
+
+trap "shut_down" SIGKILL SIGTERM SIGHUP SIGINT EXIT
 
 # check service status
 for ((i=0;i<=5;i++)); do

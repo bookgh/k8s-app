@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:latest
 
 ENV USER fdfs
 ENV WEB_PORT 8888
@@ -11,18 +11,19 @@ RUN addgroup -g 1000 -S $USER \
   && sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \ 
   && apk add --no-cache git gcc libc-dev bash make automake autoconf libtool linux-headers 
 
-RUN cd /root \
+RUN cd /opt \
   && git clone https://github.com/happyfish100/libfastcommon.git --depth 1 \
-  && cd /root/libfastcommon \
+  && cd /opt/libfastcommon \
   && ./make.sh && ./make.sh install \
-  && cd /root \
-  && rm -rf /root/libfastcommon
+  && cd /opt \
+  && rm -rf /opt/libfastcommon
 
-RUN git clone https://github.com/happyfish100/fastdfs.git --depth 1 \
-  && cd /root/fastdfs \
+RUN cd /opt \
+  && git clone https://github.com/happyfish100/fastdfs.git --depth 1 \
+  && cd /opt/fastdfs \
   && ./make.sh && ./make.sh install \
-  && cd /root \
-  && rm -rf /root/fastdfs
+  && cd /opt \
+  && rm -rf /opt/fastdfs
       
 RUN cp /etc/fdfs/tracker.conf.sample /etc/fdfs/tracker.conf \
   && cp /etc/fdfs/client.conf.sample /etc/fdfs/client.conf \
@@ -34,9 +35,8 @@ RUN cp /etc/fdfs/tracker.conf.sample /etc/fdfs/tracker.conf \
 
 # 启动脚本
 COPY start.sh /start.sh
+COPY fdfsOK.sh /usr/bin/fdfsOK.sh
 
-EXPOSE 22122 8888
+EXPOSE 22122 23000 8888
 
-ENTRYPOINT ["/start.sh"]
-
-# CMD ["/bin/bash","/start.sh"]
+# ENTRYPOINT ["/start.sh"]

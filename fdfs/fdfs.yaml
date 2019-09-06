@@ -9,17 +9,22 @@ spec:
   - port: 22122
     name: tracker
     targetPort: 22122
-  - port: 8888
+  - port: 23000
     name: storage
+    targetPort: 23000
+  - port: 8888
+    name: nginx
     targetPort: 8888
   type: NodePort
+  selector:
+    app: fdfs-pod
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata: 
   name: fdfs
-  namespace: fabric8
+  namespace: default
 spec:
   serviceName: fdfs-svc
   replicas: 2
@@ -31,22 +36,74 @@ spec:
       labels:
         app: fdfs-pod
     spec:
-      serviceAccount: nfs-client-provisioner 
+      # serviceAccount: nfs-client-provisioner 
       containers:
-      - name: fdfs
-        imagePullPolicy: IfNotPresent
-        image: fastdfs:5.11
+      - name: tracker
+        imagePullPolicy: Always  # IfNotPresent
+        image: 192.168.2.30/kubernetes/fdfs:5.11
         ports:
-        - containerPort: 8888
-          name: storage
         - containerPort: 22122
           name: tracker
         env:
         - name : TRACKERSERVER
-          value: "fdfs-0 fdfs-1"
+          value: "fdfs-0.fdfs-svc.default.svc fdfs-1.fdfs-svc.default.svc"
+        command:
+        - sh
+        - -c
+        - "exec /start.sh tracker"
+#        readinessProbe:
+#          exec:
+#            command:
+#            - /usr/bin/fdfsOK.sh
+#            - tracker
+#            - status
+#          initialDelaySeconds: 5
+#          periodSeconds: 10
+#          timeoutSeconds: 60
+        livenessProbe:
+          exec:
+            command:
+            - /usr/bin/fdfsOK.sh
+            - tracker
+            - monitor
+          initialDelaySeconds: 90
+          periodSeconds: 30
+
+
+      - name: storage
+        imagePullPolicy: Always  # IfNotPresent
+        image: 192.168.2.30/kubernetes/fdfs:5.11
+        ports:
+        - containerPort: 8888
+          name: storage
+        env:
+        - name : TRACKERSERVER
+          value: "fdfs-0.fdfs-svc.default.svc fdfs-1.fdfs-svc.default.svc"
+        command:
+        - sh
+        - -c
+        - "exec /start.sh storage"
+ #       readinessProbe:
+ #         exec:
+ #           command:
+ #           - /usr/bin/fdfsOK.sh
+ #           - storage
+ #           - status
+ #         initialDelaySeconds: 5
+ #         periodSeconds: 10
+ #         timeoutSeconds: 60
+        livenessProbe:
+          exec:
+            command:
+            - /usr/bin/fdfsOK.sh
+            - storage
+            - monitor
+          initialDelaySeconds: 90
+          periodSeconds: 30
+
         volumeMounts:
         - name: data
-          mountPath: /data/storage 
+          mountPath: /data/storage
   volumeClaimTemplates:
   - metadata:
       name: data

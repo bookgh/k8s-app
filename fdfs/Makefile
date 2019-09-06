@@ -1,5 +1,5 @@
 PROJECT_URL=192.168.2.30/kubernetes
-DOCKER_IMAGE_NAME=$(PROJECT_URL)/fastdfs
+DOCKER_IMAGE_NAME=$(PROJECT_URL)/fdfs
 DOCKER_IMAGE_VERSION=5.11
 DOCKER_IMAGE=$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_VERSION)
 
@@ -11,10 +11,10 @@ build:
 push:
 	docker push ${DOCKER_IMAGE}
 
-fastdfs.yaml: .fastdfs.yaml.in
-	@cat .fastdfs.yaml.in | sed \
+fdfs.yaml: .fdfs.yaml.in
+	@cat .fdfs.yaml.in | sed \
 		-e  "s|%DOCKER_IMAGE%|$(DOCKER_IMAGE)|" \
-		> fastdfs.yaml && echo "created $@"
+		> fdfs.yaml && echo "created $@"
 
 clean:
-	@rm -f fastdfs.yaml
+	@rm -f fdfs.yaml

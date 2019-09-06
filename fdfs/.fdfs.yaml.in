@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fdfs-svc
+  labels:
+    app: fdfs-svc
+spec:
+  ports:
+  - port: 22122
+    name: tracker
+    targetPort: 22122
+  - port: 8888
+    name: storage
+    targetPort: 8888
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: 
+  name: fdfs
+  namespace: default
+spec:
+  serviceName: fdfs-svc
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fdfs-pod
+  template:
+    metadata:
+      labels:
+        app: fdfs-pod
+    spec:
+      # serviceAccount: nfs-client-provisioner 
+      containers:
+      - name: tracker
+        imagePullPolicy: IfNotPresent
+        image: fastdfs:5.11
+        ports:
+        - containerPort: 8888
+          name: storage
+        - containerPort: 22122
+          name: tracker
+        env:
+        - name : TRACKERSERVER
+          value: "fdfs-0 fdfs-1"
+        volumeMounts:
+        - name: data
+          mountPath: /data/storage 
+        command:
+        - sh
+        - -c
+        - "exec                  "
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - "ReadWriteOnce"
+      resources:
+        requests:
+          storage: "100Gi"
+      storageClassName: "nfs-expample"
