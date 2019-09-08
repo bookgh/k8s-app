@@ -1,0 +1,38 @@
+version: '3'
+services:
+  tracker0:
+    hostname: tracker0
+    container_name: tracker0
+    image: 192.168.0.75/kubernetes/fdfs:5.11
+    environment:
+      - FASTDFS_MODE=tracker
+      - TRACKERSERVER=tracker0:22122
+    ports:
+      - 22122:22122
+    command: /usr/bin/run.sh
+ 
+  storage0:
+    hostname: storage0
+    container_name: storage0
+    image: 192.168.0.75/kubernetes/fdfs:5.11
+    environment:
+      - FASTDFS_MODE=storage
+      - TRACKERSERVER=tracker0:22122
+    volumes: 
+      - /var/fdfs/storage:/data/storage
+    ports:
+      - 23000:23000
+    command: /usr/bin/run.sh
+
+  nginx:
+    hostname: nginx
+    container_name: nginx
+    image: 192.168.0.75/kubernetes/fdfs:5.11
+    environment:
+      - FASTDFS_MODE=nginx
+      - TRACKERSERVER=tracker0:22122
+    volumes:
+      - /var/fdfs/storage:/data/storage
+    ports:
+      - 8888:8888
+    command: /usr/bin/run.sh

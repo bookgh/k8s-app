@@ -9,10 +9,15 @@ spec:
   - port: 22122
     name: tracker
     targetPort: 22122
+  #- port: 23000
+  #  name: storage
+  #  targetPort: 23000
   - port: 8888
-    name: storage
+    name: nginx
     targetPort: 8888
   type: NodePort
+  selector:
+    app: fdfs-pod
 
 ---
 apiVersion: apps/v1
@@ -34,23 +39,104 @@ spec:
       # serviceAccount: nfs-client-provisioner 
       containers:
       - name: tracker
-        imagePullPolicy: IfNotPresent
-        image: fastdfs:5.11
+        imagePullPolicy: Always  # IfNotPresent
+        image: %DOCKER_IMAGE%
         ports:
-        - containerPort: 8888
-          name: storage
         - containerPort: 22122
           name: tracker
         env:
         - name : TRACKERSERVER
-          value: "fdfs-0 fdfs-1"
-        volumeMounts:
-        - name: data
-          mountPath: /data/storage 
+          value: "fdfs-0.fdfs-svc.default.svc fdfs-1.fdfs-svc.default.svc"
+        - name: FASTDFS_MODE
+          value: tracker
         command:
         - sh
         - -c
-        - "exec                  "
+        - /usr/bin/run.sh
+        readinessProbe:
+          exec:
+            command:
+            - /usr/bin/fdfsOK.sh
+            - status
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+            - /usr/bin/fdfsOK.sh
+            - monitor
+          initialDelaySeconds: 90
+          periodSeconds: 30
+
+      - name: storage
+        imagePullPolicy: Always  # IfNotPresent
+        image: %DOCKER_IMAGE%
+        ports:
+        - containerPort: 8888
+          name: storage
+        env:
+        - name : TRACKERSERVER
+          value: "fdfs-0.fdfs-svc.default.svc fdfs-1.fdfs-svc.default.svc"
+        - name: FASTDFS_MODE
+          value: storage 
+        command:
+        - sh
+        - -c
+        - /usr/bin/run.sh
+        #readinessProbe:
+        #  exec:
+        #    command:
+        #    - /usr/bin/fdfsOK.sh
+        #    - status
+        #  initialDelaySeconds: 5
+        #  periodSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+            - /usr/bin/fdfsOK.sh
+            - monitor
+          initialDelaySeconds: 90
+          periodSeconds: 30
+        volumeMounts:
+        - name: data
+          mountPath: /data/storage
+
+      - name: nginx
+        imagePullPolicy: Always  # IfNotPresent
+        image: %DOCKER_IMAGE%
+        ports:
+        - containerPort: 8888
+          name: nginx
+        env:
+        - name : TRACKERSERVER
+          value: "fdfs-0.fdfs-svc.default.svc fdfs-1.fdfs-svc.default.svc"
+        - name: FASTDFS_MODE
+          value: nginx
+        command:
+        - sh
+        - -c
+        - /usr/bin/run.sh
+        #readinessProbe:
+        #  exec:
+        #    command:
+        #    - /usr/bin/fdfsOK.sh
+        #    - status
+        #  initialDelaySeconds: 5
+        #  periodSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+            - /usr/bin/fdfsOK.sh
+            - monitor
+          initialDelaySeconds: 90
+          periodSeconds: 30
+        volumeMounts:
+        - name: data
+          mountPath: /data/storage
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+
   volumeClaimTemplates:
   - metadata:
       name: data
