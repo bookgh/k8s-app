@@ -35,3 +35,4 @@ replace kubernetes mysql 5.7.20
 replace kubernetes busybox 1.29.3
 replace kubernetes mongo 3.6
 replace kubernetes unguiculus mongodb-install 0.7
+replace kubernetes jmgao1983 elasticsearch 6.4.0

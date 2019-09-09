@@ -3,7 +3,7 @@ services:
   tracker0:
     hostname: tracker0
     container_name: tracker0
-    image: 192.168.0.75/kubernetes/fdfs:5.11
+    image: 192.168.2.30/kubernetes/fdfs:5.11
     environment:
       - FASTDFS_MODE=tracker
       - TRACKERSERVER=tracker0:22122
@@ -14,7 +14,7 @@ services:
   storage0:
     hostname: storage0
     container_name: storage0
-    image: 192.168.0.75/kubernetes/fdfs:5.11
+    image: 192.168.2.30/kubernetes/fdfs:5.11
     environment:
       - FASTDFS_MODE=storage
       - TRACKERSERVER=tracker0:22122
@@ -27,7 +27,7 @@ services:
   nginx:
     hostname: nginx
     container_name: nginx
-    image: 192.168.0.75/kubernetes/fdfs:5.11
+    image: 192.168.2.30/kubernetes/fdfs:5.11
     environment:
       - FASTDFS_MODE=nginx
       - TRACKERSERVER=tracker0:22122
