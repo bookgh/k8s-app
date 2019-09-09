@@ -40,7 +40,7 @@ spec:
   - name: http
     port: 80
     targetPort: 80
-    nodePort: 32567
+    nodePort: 34567
   selector:
     k8s.eip.work/layer: monitor
     k8s.eip.work/name: kuboard

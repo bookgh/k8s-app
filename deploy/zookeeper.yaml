@@ -161,10 +161,9 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: zookeeper-data
-      annotations:
-        volume.beta.kubernetes.io/storage-class: nfs-expample
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
           storage: 100Gi
+      storageClassName: "nfs-expample"

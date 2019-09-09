@@ -77,10 +77,12 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
-          tcpSocket:
-            port: 9092
-          initialDelaySeconds: 15
-          periodSeconds: 20
+          exec:
+            command:
+            - "kafkaOk.sh"
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
         command:
         - sh
         - -c
@@ -175,7 +177,7 @@ spec:
           --override reserved.broker.max.id=1000 "
         env:
         - name: KAFKA_HEAP_OPTS
-          value : "-Xmx768M -Xms768M"
+          value : "-Xmx512M -Xms512M"
         - name: KAFKA_OPTS
           value: "-Dlogging.level=INFO"
         volumeMounts:
@@ -187,10 +189,9 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: kafka-data
-      annotations:
-        volume.beta.kubernetes.io/storage-class: nfs-expample
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
           storage: 100Gi
+      storageClassName: "nfs-expample"
