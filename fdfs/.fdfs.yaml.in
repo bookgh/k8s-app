@@ -9,9 +9,9 @@ spec:
   - port: 22122
     name: tracker
     targetPort: 22122
-  #- port: 23000
-  #  name: storage
-  #  targetPort: 23000
+  - port: 23000
+    name: storage
+    targetPort: 23000
   - port: 8888
     name: nginx
     targetPort: 8888

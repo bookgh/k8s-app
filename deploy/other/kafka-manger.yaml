@@ -62,7 +62,7 @@ spec:
       containers:
       - name: k8skafka
         imagePullPolicy: Always
-        image: %DOCKER_IMAGE%
+        image: 192.168.2.30/kubernetes/kafka:2.12-1.1.0-debian
         resources:
           requests:
             memory: "1Gi"
@@ -77,12 +77,10 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
-          exec:
-            command:
-            - "kafkaOk.sh"
-          initialDelaySeconds: 60
-          periodSeconds: 30
-          timeoutSeconds: 10
+          tcpSocket:
+            port: 9092
+          initialDelaySeconds: 15
+          periodSeconds: 20
         command:
         - sh
         - -c
@@ -177,7 +175,7 @@ spec:
           --override reserved.broker.max.id=1000 "
         env:
         - name: KAFKA_HEAP_OPTS
-          value : "-Xmx512M -Xms512M"
+          value : "-Xmx768M -Xms768M"
         - name: KAFKA_OPTS
           value: "-Dlogging.level=INFO"
         volumeMounts:
@@ -196,3 +194,46 @@ spec:
       resources:
         requests:
           storage: 100Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-manager-svc
+  labels:
+    app: kafka-manager-svc
+spec:
+  ports:
+  - port: 9000
+    name: server
+    nodePort: 29090
+  type: NodePort
+  selector:
+    app: kafka-manager
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-manager-deploy
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: kafka-manager
+  template:
+    metadata: 
+      labels: 
+        app: kafka-manager
+    spec:
+      containers:
+      - name: kafka-manager
+        image: sheepkiller/kafka-manager:latest
+        ports:
+        - name: http
+          containerPort: 9000
+        env:
+        - name: APPLICATION_SECRET
+          value: letmein
+        - name: ZK_HOSTS
+          value: zk-svc.default.svc.cluster.local

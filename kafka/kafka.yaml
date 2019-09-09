@@ -62,7 +62,7 @@ spec:
       containers:
       - name: k8skafka
         imagePullPolicy: Always
-        image: %DOCKER_IMAGE%
+        image: 192.168.2.30/kubernetes/kafka:2.12-1.1.0-debian
         resources:
           requests:
             memory: "1Gi"

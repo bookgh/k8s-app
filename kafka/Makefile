@@ -1,6 +1,8 @@
+NAME=kafka
+VERSION=2.12-1.1.0
 PROJECT_URL=192.168.2.30/kubernetes
-DOCKER_IMAGE_NAME=$(PROJECT_URL)/kafka
-DOCKER_IMAGE_VERSION=2.12-1.1.0
+DOCKER_IMAGE_NAME=$(PROJECT_URL)/$(NAME)
+DOCKER_IMAGE_VERSION=$(VERSION)
 DOCKER_IMAGE=$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_VERSION)
 
 all: debian push
@@ -14,24 +16,24 @@ debian:
 push: push
 	docker push ${DOCKER_IMAGE}-debian
 
-kafka.yaml: .kafka.yaml.in
-	@cat .kafka.yaml.in | sed \
+yaml: .${NAME}.yaml.in
+	@cat .${NAME}.yaml.in | sed \
 		-e  "s|%DOCKER_IMAGE%|$(DOCKER_IMAGE)-debian|" \
-		> kafka.yaml && echo "created $@"
+		> ${NAME}.yaml && echo "created $@"
 
-start: kafka.yaml
-	kubectl apply -f kafka.yaml
+start: ${NAME}.yaml
+	kubectl apply -f ${NAME}.yaml
 
-stop: kafka.yaml
-	kubectl delete --ignore-not-found=true -f kafka.yaml
+stop: ${NAME}.yaml
+	kubectl delete --ignore-not-found=true -f ${NAME}.yaml
 
 port:
-	kubectl port-forward kafka-1 9099:9092
+	kubectl port-forward ${NAME}-1 9099:9092
 
 check:
 	@echo srvr | nc localhost  9099
 
 clean:
-	@rm -fv kafka.yaml
+	@rm -fv ${NAME}.yaml
 
 .PHONY: all debian push
