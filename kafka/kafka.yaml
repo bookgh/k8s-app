@@ -79,7 +79,9 @@ spec:
         livenessProbe:
           exec:
             command:
-            - "kafkaOk.sh"
+            - sh
+            - -c
+            - /opt/kafka/bin/kafkaOK.sh
           initialDelaySeconds: 60
           periodSeconds: 30
           timeoutSeconds: 10

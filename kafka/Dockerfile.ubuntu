@@ -2,10 +2,10 @@ FROM ubuntu:16.04
 
 ENV TZ=Asia/Shanghai \ 
     KAFKA_USER=kafka \
-    KAFKA_DATA_DIR=/var/lib/kafka/data \
     JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 \
     KAFKA_HOME=/opt/kafka \
-    PATH=$PATH:/opt/kafka/bin
+    KAFKA_DATA_DIR=/var/lib/kafka/data \
+    PATH=$PATH:/opt/kafka_2.12-1.1.0/bin
 
 ARG KAFKA_VERSION=1.1.0
 ARG KAFKA_DIST=kafka_2.12-1.1.0
@@ -25,15 +25,13 @@ RUN set -x \
     && tar -xzf "$KAFKA_DIST.tgz" -C /opt \
     && rm -r "$GNUPGHOME" "$KAFKA_DIST.tgz" "$KAFKA_DIST.tgz.asc"
     
-COPY kafkaOK.sh /kafkaOK.sh
+COPY kafkaOK.sh /opt/$KAFKA_DIST/bin/kafkaOK.sh
 COPY log4j.properties /opt/$KAFKA_DIST/config/
 
 RUN set -x \
-    && ln -s /opt/$KAFKA_DIST $KAFKA_HOME \
+    && ln -s /opt/${KAFKA_DIST} $KAFKA_HOME \
     && useradd $KAFKA_USER \
     && [ `id -u $KAFKA_USER` -eq 1000 ] \
     && [ `id -g $KAFKA_USER` -eq 1000 ] \
     && mkdir -p $KAFKA_DATA_DIR \
-    && chown -R "$KAFKA_USER:$KAFKA_USER"  /opt/$KAFKA_DIST \
-    && chown -R "$KAFKA_USER:$KAFKA_USER"  $KAFKA_DATA_DIR /kafkaOK.sh \
-    && chmod +x /kafkaOK.sh
+    && chown -R "$KAFKA_USER:$KAFKA_USER"  /opt/${KAFKA_DIST} $KAFKA_DATA_DIR 
