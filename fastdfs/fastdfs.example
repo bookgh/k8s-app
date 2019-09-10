@@ -110,7 +110,7 @@ spec:
       name: data
     spec:
       accessModes: ["ReadWriteMany"]
-      storageClassName: "nfs-expample"
+      storageClassName: "nfs-example"
       resources:
         requests:
           storage: 100Gi

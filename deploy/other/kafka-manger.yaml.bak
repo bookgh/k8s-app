@@ -188,7 +188,7 @@ spec:
   - metadata:
       name: kafka-data
       annotations:
-        volume.beta.kubernetes.io/storage-class: nfs-expample
+        volume.beta.kubernetes.io/storage-class: nfs-example
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:

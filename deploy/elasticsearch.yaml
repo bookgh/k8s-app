@@ -324,7 +324,7 @@ spec:
     spec:
       accessModes:
         - "ReadWriteOnce"
-      storageClassName: "nfs-expample"
+      storageClassName: "nfs-example"
       resources:
         requests:
           storage: "100Gi"
@@ -431,7 +431,7 @@ spec:
     spec:
       accessModes:
         - "ReadWriteOnce"
-      storageClassName: "nfs-expample"
+      storageClassName: "nfs-example"
       resources:
         requests:
           storage: "10Gi"
