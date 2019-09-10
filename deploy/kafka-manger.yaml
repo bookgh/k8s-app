@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-manager-svc
+  labels:
+    app: kafka-manager-svc
+spec:
+  ports:
+  - port: 9000
+    name: server
+    nodePort: 29090
+  type: NodePort
+  selector:
+    app: kafka-manager
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-manager-deploy
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: kafka-manager
+  template:
+    metadata: 
+      labels: 
+        app: kafka-manager
+    spec:
+      containers:
+      - name: kafka-manager
+        image: 192.168.2.30/kubernetes/kafka-manager:latest
+        ports:
+        - name: http
+          containerPort: 9000
+        env:
+        - name: APPLICATION_SECRET
+          value: letmein
+        - name: ZK_HOSTS
+          value: zk-0.zk-svc.default.svc.cluster.local

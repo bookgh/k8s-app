@@ -38,3 +38,4 @@ replace kubernetes mongo 3.6
 replace kubernetes unguiculus mongodb-install 0.7
 replace kubernetes jmgao1983 elasticsearch 6.4.0
 replace kubernetes eipwork kuboard latest
+replace kubernetes sheepkiller kafka-manager latest
