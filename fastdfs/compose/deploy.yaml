@@ -47,4 +47,4 @@ spec:
       - name: storage-data
         nfs:
           server: 192.168.2.71
-          path: "/data/expample"
+          path: "/data/example"
