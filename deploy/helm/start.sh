@@ -13,6 +13,7 @@ helm install --name hadoop  \
   --set image.repository=192.168.2.30/kubernetes/hadoop \
   --set image.tag=2.7.7 \
   --set hadoopVersion=2.7.7 \
+  --set hdfs.dataNode.replicas=3 \
   hadoop
 
 # 增加DataNode节点数量

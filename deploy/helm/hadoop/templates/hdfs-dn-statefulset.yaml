@@ -78,11 +78,11 @@ spec:
       name: data
     spec:
       accessModes:
-      - {{ .Values.persistence.dataNode.accessModes }}
+      - {{ .Values.persistence.dataNode.accessMode | quote }}
       resources:
         requests:
           storage: {{ .Values.persistence.dataNode.size | quote }}
-      storageClassName: {{ .Values.persistence.dataNode.storageClass }}
+      storageClassName: {{ .Values.persistence.dataNode.storageClass | quote }}
 {{- else }}
       - name: data
         emptyDir: {}
