@@ -37,6 +37,7 @@ spec:
   - port: 8080
     name: port5
     targetPort: 8080
+    nodePort: 28080
   type: NodePort
   selector:
     app: storm-pod
@@ -61,7 +62,7 @@ spec:
       containers:
       - name: storm-nimbus
         imagePullPolicy: IfNotPresent
-        image: storm:1.2.2
+        image: 192.168.2.30/kubernetes/storm:1.2.2
         ports:
         - containerPort: 6700
           name: one
@@ -88,7 +89,7 @@ spec:
           mountPath: /apache-storm-1.2.2/storm-local/       
       - name: storm-supervisor
         imagePullPolicy: IfNotPresent
-        image: storm:1.2.2
+        image: 192.168.2.30/kubernetes/storm:1.2.2
         ports:
         - containerPort: 6700
           name: one
@@ -116,7 +117,7 @@ spec:
 
       - name: storm-ui
         imagePullPolicy: IfNotPresent
-        image: storm:1.2.2
+        image: 192.168.2.30/kubernetes/storm:1.2.2
         ports:
         - containerPort: 6700
           name: one
@@ -135,12 +136,12 @@ spec:
         - /apache-storm-1.2.2/bin/storm
         - ui
         volumeMounts:
-        - name: storm-data
+        - name: data
           mountPath: /apache-storm-1.2.2/storm-local/
 
   volumeClaimTemplates:
   - metadata:
-      name: storm-data
+      name: data
     spec:
       accessModes:
       - "ReadWriteOnce"

@@ -153,14 +153,14 @@ spec:
           initialDelaySeconds: 10
           timeoutSeconds: 5
         volumeMounts:
-        - name: zookeeper-data
+        - name: data
           mountPath: /var/lib/zookeeper
       securityContext:
         runAsUser: 1000
         fsGroup: 1000
   volumeClaimTemplates:
   - metadata:
-      name: zookeeper-data
+      name: data
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:

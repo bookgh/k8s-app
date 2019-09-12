@@ -19,11 +19,11 @@ spec:
     name: port4
     targetPort: 6703
   - port: 6627
-    name: port5
+    name: port6
     targetPort: 6627
   selector:
     app: storm-pod
-  # clusterIP: None
+  clusterIP: None
 
 ---
 apiVersion: v1
@@ -35,7 +35,7 @@ metadata:
 spec:
   ports:
   - port: 8080
-    name: storm-ui
+    name: port5
     targetPort: 8080
     nodePort: 28080
   type: NodePort
@@ -62,7 +62,7 @@ spec:
       containers:
       - name: storm-nimbus
         imagePullPolicy: IfNotPresent
-        image: storm:1.2.2
+        image: 192.168.2.30/kubernetes/storm:1.2.2
         ports:
         - containerPort: 6700
           name: one
@@ -72,8 +72,10 @@ spec:
           name: three
         - containerPort: 6703
           name: four
-        - containerPort: 6627
+        - containerPort: 8080
           name: five 
+        - containerPort: 6627
+          name: nine  
         command:
         - /bin/bash
         - /apache-storm-1.2.2/bin/storm
@@ -87,7 +89,7 @@ spec:
           mountPath: /apache-storm-1.2.2/storm-local/       
       - name: storm-supervisor
         imagePullPolicy: IfNotPresent
-        image: storm:1.2.2
+        image: 192.168.2.30/kubernetes/storm:1.2.2
         ports:
         - containerPort: 6700
           name: one
@@ -97,8 +99,10 @@ spec:
           name: three
         - containerPort: 6703
           name: four
-        - containerPort: 6627
+        - containerPort: 8080
           name: five
+        - containerPort: 6627
+          name: nine
         command:
         - /bin/bash
         - /apache-storm-1.2.2/bin/storm
@@ -113,21 +117,31 @@ spec:
 
       - name: storm-ui
         imagePullPolicy: IfNotPresent
-        image: storm:1.2.2
+        image: 192.168.2.30/kubernetes/storm:1.2.2
         ports:
+        - containerPort: 6700
+          name: one
+        - containerPort: 6701
+          name: two
+        - containerPort: 6702
+          name: three
+        - containerPort: 6703
+          name: four
         - containerPort: 8080
-          name: storm-ui
+          name: five
+        - containerPort: 6627
+          name: nine
         command:
         - /bin/bash
         - /apache-storm-1.2.2/bin/storm
         - ui
         volumeMounts:
-        - name: storm-data
+        - name: data
           mountPath: /apache-storm-1.2.2/storm-local/
 
   volumeClaimTemplates:
   - metadata:
-      name: storm-data
+      name: data
     spec:
       accessModes:
       - "ReadWriteOnce"

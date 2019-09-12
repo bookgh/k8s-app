@@ -431,7 +431,7 @@ spec:
               mountPath: /init
             - name: configdir
               mountPath: /data/configdb
-            - name: datadir
+            - name: data
               mountPath: /data/db
           resources:
             {}
@@ -475,7 +475,7 @@ spec:
             periodSeconds: 10
             successThreshold: 1
           volumeMounts:
-            - name: datadir
+            - name: data
               mountPath: /data/db
             - name: configdir
               mountPath: /data/configdb
@@ -495,7 +495,7 @@ spec:
           emptyDir: {}
   volumeClaimTemplates:
     - metadata:
-        name: datadir
+        name: data
         annotations:
       spec:
         accessModes:

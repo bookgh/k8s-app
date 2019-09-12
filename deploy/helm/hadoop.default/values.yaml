@@ -1,12 +1,12 @@
 # The base hadoop image to use for all components.
 # See this repo for image build details: https://github.com/Comcast/kube-yarn/tree/master/image
 image:
-  repository: 192.168.2.30/kubernetes/hadoop
-  tag: 2.7.7
+  repository: danisla/hadoop
+  tag: 2.9.0
   pullPolicy: IfNotPresent
 
 # The version of the hadoop libraries being used in the image.
-hadoopVersion: 2.7.7
+hadoopVersion: 2.9.0
 
 # Select antiAffinity as either hard or soft, default is soft
 antiAffinity: "soft"
@@ -24,7 +24,7 @@ hdfs:
         cpu: "1000m"
 
   dataNode:
-    replicas: 3
+    replicas: 1
 
     pdbMinAvailable: 1
 
@@ -72,13 +72,13 @@ yarn:
 
 persistence:
   nameNode:
-    enabled: true
-    storageClass: "nfs-example"
+    enabled: false
+    storageClass: "-"
     accessMode: ReadWriteOnce
     size: 50Gi
 
   dataNode:
-    enabled: true
-    storageClass: "nfs-example"
+    enabled: false
+    storageClass: "-"
     accessMode: ReadWriteOnce
     size: 200Gi

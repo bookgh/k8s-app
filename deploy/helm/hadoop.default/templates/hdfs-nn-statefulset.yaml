@@ -1,23 +1,23 @@
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
-  name: {{ include "hadoop.fullname" . }}-hdfs-dn
+  name: {{ include "hadoop.fullname" . }}-hdfs-nn
   annotations:
     checksum/config: {{ include (print $.Template.BasePath "/hadoop-configmap.yaml") . | sha256sum }}
   labels:
     app: {{ include "hadoop.name" . }}
     chart: {{ include "hadoop.chart" . }}
     release: {{ .Release.Name }}
-    component: hdfs-dn
+    component: hdfs-nn
 spec:
-  serviceName: {{ include "hadoop.fullname" . }}-hdfs-dn
-  replicas: {{ .Values.hdfs.dataNode.replicas }}
+  serviceName: {{ include "hadoop.fullname" . }}-hdfs-nn
+  replicas: 1
   template:
     metadata:
       labels:
         app: {{ include "hadoop.name" . }}
         release: {{ .Release.Name }}
-        component: hdfs-dn
+        component: hdfs-nn
     spec:
       affinity:
         podAntiAffinity:
@@ -28,7 +28,7 @@ spec:
               matchLabels:
                 app:  {{ include "hadoop.name" . }}
                 release: {{ .Release.Name | quote }}
-                component: hdfs-dn
+                component: hdfs-nn
         {{- else if eq .Values.antiAffinity "soft" }}
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 5
@@ -38,52 +38,44 @@ spec:
                 matchLabels:
                   app:  {{ include "hadoop.name" . }}
                   release: {{ .Release.Name | quote }}
-                  component: hdfs-dn
+                  component: hdfs-nn
         {{- end }}
       terminationGracePeriodSeconds: 0
       containers:
-      - name: hdfs-dn
+      - name: hdfs-nn
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         command:
-           - "/bin/bash"
-           - "/tmp/hadoop-config/bootstrap.sh"
-           - "-d"
+        - "/bin/bash"
+        - "/tmp/hadoop-config/bootstrap.sh"
+        - "-d"
         resources:
-{{ toYaml .Values.hdfs.dataNode.resources | indent 10 }}
+{{ toYaml .Values.hdfs.nameNode.resources | indent 10 }}
         readinessProbe:
           httpGet:
             path: /
-            port: 50075
+            port: 50070
           initialDelaySeconds: 5
           timeoutSeconds: 2
         livenessProbe:
           httpGet:
             path: /
-            port: 50075
+            port: 50070
           initialDelaySeconds: 10
           timeoutSeconds: 2
         volumeMounts:
         - name: hadoop-config
           mountPath: /tmp/hadoop-config
-        - name: data
-          mountPath: /root/hdfs/datanode
+        - name: dfs
+          mountPath: /root/hdfs/namenode
       volumes:
       - name: hadoop-config
         configMap:
           name: {{ include "hadoop.fullname" . }}
-{{- if .Values.persistence.dataNode.enabled }}
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-    spec:
-      accessModes:
-      - {{ .Values.persistence.dataNode.accessModes }}
-      resources:
-        requests:
-          storage: {{ .Values.persistence.dataNode.size | quote }}
-      storageClassName: {{ .Values.persistence.dataNode.storageClass }}
-{{- else }}
-      - name: data
+      - name: dfs
+      {{- if .Values.persistence.nameNode.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ include "hadoop.fullname" . }}-hdfs-nn
+      {{- else }}
         emptyDir: {}
-{{- end }}
+      {{- end }}

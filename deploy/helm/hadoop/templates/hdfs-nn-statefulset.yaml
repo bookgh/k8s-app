@@ -66,16 +66,24 @@ spec:
         volumeMounts:
         - name: hadoop-config
           mountPath: /tmp/hadoop-config
-        - name: dfs
+        - name: data
           mountPath: /root/hdfs/namenode
       volumes:
       - name: hadoop-config
         configMap:
           name: {{ include "hadoop.fullname" . }}
-      - name: dfs
-      {{- if .Values.persistence.nameNode.enabled }}
-        persistentVolumeClaim:
-          claimName: {{ include "hadoop.fullname" . }}-hdfs-nn
-      {{- else }}
+{{- if .Values.persistence.nameNode.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - {{ .Values.persistence.nameNode.accessModes }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.nameNode.size | quote }}
+      storageClassName: {{ .Values.persistence.nameNode.storageClass }}
+{{- else }}
+      - name: data
         emptyDir: {}
-      {{- end }}
+{{- end }}

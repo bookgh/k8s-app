@@ -183,14 +183,14 @@ spec:
         - name: KAFKA_OPTS
           value: "-Dlogging.level=INFO"
         volumeMounts:
-        - name: kafka-data
+        - name: data
           mountPath: /var/lib/kafka
       securityContext:
         runAsUser: 1000
         fsGroup: 1000
   volumeClaimTemplates:
   - metadata:
-      name: kafka-data
+      name: data
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:

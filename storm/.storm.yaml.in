@@ -136,12 +136,12 @@ spec:
         - /apache-storm-1.2.2/bin/storm
         - ui
         volumeMounts:
-        - name: storm-data
+        - name: data
           mountPath: /apache-storm-1.2.2/storm-local/
 
   volumeClaimTemplates:
   - metadata:
-      name: storm-data
+      name: data
     spec:
       accessModes:
       - "ReadWriteOnce"
