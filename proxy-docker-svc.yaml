@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy-svc
+  namespace: default
+spec:
+  selector:
+    app: proxy
+    release: proxy
+  type: NodePort
+  ports: 
+  - name: proxy
+    port: 7001
+    targetPort: 7001
+    nodePort: 27001
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy-deploy
+  namespace: default
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: proxy
+      release: proxy
+  template:
+    metadata: 
+      labels: 
+        app: proxy
+        release: proxy
+    spec:
+      containers:
+      - name: proxy
+        image: newnius/docker-proxy
+        ports:
+        - name: proxy
+          containerPort: 7001
