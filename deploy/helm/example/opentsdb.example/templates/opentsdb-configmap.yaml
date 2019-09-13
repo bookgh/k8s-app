@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "opentsdb.name" . }}-opentsdb-configmap
+  labels:
+    app: {{ template "opentsdb.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  bootstrap.sh: |
+    #!/bin/bash
+
+    set -x
+
+    # Directory to find config artifacts
+    CONFIG_DIR="/tmp/opentsdb-config"
+
+    # Copy config files from volume mount
+
+    for f in opentsdb.conf; do
+      if [[ -e ${CONFIG_DIR}/$f ]]; then
+        cp ${CONFIG_DIR}/$f /etc/opentsdb/$f
+      else
+        echo "ERROR: Could not find $f in $CONFIG_DIR"
+        exit 1
+      fi
+    done
+    
+    /usr/share/opentsdb/bin/tsdb tsd --config=/etc/opentsdb/opentsdb.conf
+
+    if [[ $1 == "-bash" ]]; then
+      /bin/bash
+    fi
+
+  opentsdb.conf: |
+    tsd.core.preload_uid_cache = true
+    tsd.core.auto_create_metrics = true
+    tsd.storage.enable_appends = true
+    tsd.core.enable_ui = true
+    tsd.core.enable_api = true
+    tsd.network.port = 14242
+    tsd.http.staticroot = /usr/share/opentsdb/static
+    tsd.http.cachedir = /opentsdb/tmp
+    tsd.http.request.enable_chunked = true
+    tsd.http.request.max_chunk = 65535
+    tsd.storage.hbase.zk_quorum = {{ .Values.opentsdb.zookeeper.zk_quorum }}
+    tsd.query.timeout = 0
+    tsd.query.filter.expansion_limit = 65535
+    tsd.network.keep_alive = true
+    tsd.network.backlog = 3072
+    tsd.storage.fix_duplicates=true

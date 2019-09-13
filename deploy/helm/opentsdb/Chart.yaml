@@ -1,0 +1,12 @@
+apiVersion: v1
+appVersion: 2.4.0
+description: The Scalable Time Series Database
+home: http://opentsdb.net
+icon: http://opentsdb.net/img/logo_header.png
+maintainers:
+- email: xiongjunfeng@haocang.com
+  name: xiongjunfeng
+name: opentsdb
+sources:
+- https://github.com/OpenTSDB/opentsdb
+version: 1.0.0

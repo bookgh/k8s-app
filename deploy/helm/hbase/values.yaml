@@ -1,5 +1,5 @@
 image:
-  repository: 192.168.0.75/kubernetes/hbase
+  repository: 192.168.2.30/kubernetes/hbase
   tag: 1.2.12
   pullPolicy: Always     # IfNotPresent
 

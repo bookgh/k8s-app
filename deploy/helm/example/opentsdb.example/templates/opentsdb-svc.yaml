@@ -1,0 +1,18 @@
+# A headless service to create DNS records
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "opentsdb.name" . }}-svc
+  labels:
+    app: {{ template "opentsdb.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - port: 14242
+    name: webui
+  clusterIP: "None"
+  selector:
+    app: {{ template "opentsdb.name" . }}
+    release: {{ .Release.Name }}

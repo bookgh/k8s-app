@@ -40,7 +40,7 @@ spec:
       containers:
       - name: tracker
         imagePullPolicy: Always  # IfNotPresent
-        image: 192.168.0.75/kubernetes/fdfs:5.11
+        image: 192.168.2.30/kubernetes/fdfs:5.11
         ports:
         - containerPort: 22122
           name: tracker
@@ -70,7 +70,7 @@ spec:
 
       - name: storage
         imagePullPolicy: Always  # IfNotPresent
-        image: 192.168.0.75/kubernetes/fdfs:5.11
+        image: 192.168.2.30/kubernetes/fdfs:5.11
         ports:
         - containerPort: 8888
           name: storage
@@ -103,7 +103,7 @@ spec:
 
       - name: nginx
         imagePullPolicy: Always  # IfNotPresent
-        image: 192.168.0.75/kubernetes/fdfs:5.11
+        image: 192.168.2.30/kubernetes/fdfs:5.11
         ports:
         - containerPort: 8888
           name: nginx

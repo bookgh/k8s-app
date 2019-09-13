@@ -1,0 +1,59 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "opentsdb.name" . }}-opentsdb-deploy
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/opentsdb-configmap.yaml") . | sha256sum }}
+  labels:
+    app: {{ template "opentsdb.name" . }} 
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.opentsdb.replicas }}
+  selector: 
+    matchLabels:
+      app: {{ template "opentsdb.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "opentsdb.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      affinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - topologyKey: "kubernetes.io/hostname"
+          labelSelector:
+            matchLabels:
+              app:  {{ template "opentsdb.name" . }}
+              release: {{ .Release.Name | quote }}
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: opentsdb
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy  }}
+        command:
+        - "/bin/bash"
+        - "/tmp/opentsdb-config/bootstrap.sh"
+        resources:
+  {{ toYaml .Values.opentsdb.resources | indent 8 }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 14242
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 14242
+          initialDelaySeconds: 20
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: opentsdb-config
+          mountPath: /tmp/opentsdb-config
+      volumes:
+      - name: opentsdb-config
+        configMap:
+          name: {{ template "opentsdb.name" . }}-opentsdb-configmap

@@ -64,7 +64,7 @@ spec:
         - name: nfs-client-provisioner
           #image: quay.io/external_storage/nfs-client-provisioner:latest
           #image: jmgao1983/nfs-client-provisioner:latest
-          image: 192.168.0.75/kubernetes/nfs-client-provisioner:latest
+          image: 192.168.2.30/kubernetes/nfs-client-provisioner:latest
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: nfs-client-root

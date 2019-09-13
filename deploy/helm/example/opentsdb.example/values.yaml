@@ -1,0 +1,18 @@
+image:
+  repository: 192.168.2.30/kubernetes/opentsdb
+  tag: 2.4.0
+  pullPolicy: Always     # IfNotPresent
+
+opentsdb:
+  replicas: 3
+
+  resources:
+    requests:
+      memory: "10Mi"
+      cpu: "10m"
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+
+  zookeeper:
+    zk_quorum: zk-0.zk-svc.default.svc.cluster.local,zk-1.zk-svc.default.svc.cluster.local,zk-2.zk-svc.default.svc.cluster.local 

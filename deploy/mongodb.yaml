@@ -377,7 +377,7 @@ spec:
       terminationGracePeriodSeconds: 30
       initContainers:
         - name: copy-config
-          image: 192.168.0.75/kubernetes/busybox:1.29.3
+          image: 192.168.2.30/kubernetes/busybox:1.29.3
           imagePullPolicy: "IfNotPresent"
           command:
             - "sh"
@@ -397,7 +397,7 @@ spec:
           resources:
             {}
         - name: install
-          image: 192.168.0.75/kubernetes/mongodb-install:0.7
+          image: 192.168.2.30/kubernetes/mongodb-install:0.7
           args:
             - --work-dir=/work-dir
           imagePullPolicy: "IfNotPresent"
@@ -407,7 +407,7 @@ spec:
           resources:
             {}
         - name: bootstrap
-          image: 192.168.0.75/kubernetes/mongo:3.6
+          image: 192.168.2.30/kubernetes/mongo:3.6
           command:
             - /work-dir/peer-finder
           args:
@@ -437,7 +437,7 @@ spec:
             {}
       containers:
         - name: mongodb-replicaset
-          image: 192.168.0.75/kubernetes/mongo:3.6
+          image: 192.168.2.30/kubernetes/mongo:3.6
           imagePullPolicy: "IfNotPresent"
           ports:
             - name: mongodb

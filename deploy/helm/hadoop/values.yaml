@@ -1,7 +1,7 @@
 # The base hadoop image to use for all components.
 # See this repo for image build details: https://github.com/Comcast/kube-yarn/tree/master/image
 image:
-  repository: 192.168.0.75/kubernetes/hadoop
+  repository: 192.168.2.30/kubernetes/hadoop
   tag: 2.7.7
   pullPolicy: Always     # IfNotPresent
 

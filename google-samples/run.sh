@@ -1,6 +1,6 @@
 #!/bin/bash
 
-harbor=192.168.0.75
+harbor=192.168.2.30
 
 function replace(){
   if [ $# -eq 4 ];then
