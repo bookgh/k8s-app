@@ -33,7 +33,10 @@ data:
 
     if [[ "${HOSTNAME}" =~ "hdfs-nn" ]]; then
       mkdir -p /root/hdfs/namenode
-      $HADOOP_PREFIX/bin/hdfs namenode -format -force -nonInteractive
+      if [[ ! -d /root/hdfs/namenode/current ]]; then
+          echo '------------------> Init hdfs namenode -format ...'
+          $HADOOP_PREFIX/bin/hdfs namenode -format -force -nonInteractive
+      fi
       $HADOOP_PREFIX/sbin/hadoop-daemon.sh start namenode
     fi
 

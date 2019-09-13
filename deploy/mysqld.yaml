@@ -87,7 +87,7 @@ spec:
     spec:
       initContainers:
       - name: clone-mysql
-        image: 192.168.2.30/kubernetes/xtrabackup:1.0
+        image: 192.168.0.75/kubernetes/xtrabackup:1.0
         imagePullPolicy: "IfNotPresent"
         command:
           - bash
@@ -121,7 +121,7 @@ spec:
         - name: conf
           mountPath: /etc/mysql/conf.d
       - name: init-mysql
-        image: 192.168.2.30/kubernetes/mysql:5.7.20
+        image: 192.168.0.75/kubernetes/mysql:5.7.20
         imagePullPolicy: "IfNotPresent"
         command: ["/bin/bash"]
         args:
@@ -153,7 +153,7 @@ spec:
             mountPath: /mnt/scripts
       containers:
       - name: mysql
-        image: 192.168.2.30/kubernetes/mysql:5.7.20
+        image: 192.168.0.75/kubernetes/mysql:5.7.20
         imagePullPolicy: "IfNotPresent"
         env:
         - name: MYSQL_DATABASE
@@ -202,7 +202,7 @@ spec:
           initialDelaySeconds: 10
           timeoutSeconds: 1
       - name: xtrabackup
-        image: 192.168.2.30/kubernetes/xtrabackup:1.0
+        image: 192.168.0.75/kubernetes/xtrabackup:1.0
         imagePullPolicy: "IfNotPresent"
         env:
         - name: MYSQL_PWD

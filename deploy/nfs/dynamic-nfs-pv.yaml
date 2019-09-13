@@ -64,7 +64,7 @@ spec:
         - name: nfs-client-provisioner
           #image: quay.io/external_storage/nfs-client-provisioner:latest
           #image: jmgao1983/nfs-client-provisioner:latest
-          image: 192.168.2.30/kubernetes/nfs-client-provisioner:latest
+          image: 192.168.0.75/kubernetes/nfs-client-provisioner:latest
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: nfs-client-root
@@ -74,13 +74,13 @@ spec:
               # 此处供应者名字供storageclass调用
               value: nfs-provisioner-01
             - name: NFS_SERVER
-              value: 192.168.2.71
+              value: 192.168.0.71
             - name: NFS_PATH
               value: /data/example
       volumes:
         - name: nfs-client-root
           nfs:
-            server: 192.168.2.71
+            server: 192.168.0.71
             path: /data/example
 
 ---

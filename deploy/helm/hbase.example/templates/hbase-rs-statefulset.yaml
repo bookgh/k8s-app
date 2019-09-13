@@ -1,0 +1,60 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: {{ template "hbase.name" . }}-hbase-rs
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/hbase-configmap.yaml") . | sha256sum }}
+  labels:
+    app: {{ template "hbase.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: hbase-rs
+spec:
+  serviceName: {{ template "hbase.name" . }}-hbase-rs
+  replicas: {{ .Values.hbase.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "hbase.name" . }}
+        release: {{ .Release.Name }}
+        component: hbase-rs
+    spec:
+      affinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: "kubernetes.io/hostname"
+            labelSelector:
+              matchLabels:
+                app:  {{ template "hbase.name" . }}
+                release: {{ .Release.Name | quote }}
+                component: hbase-rs
+      terminationGracePeriodSeconds: 0
+      containers:
+      - name: hbase-rs
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - "/bin/bash"
+        - "/tmp/hbase-config/bootstrap.sh"
+        - "-d"
+        resources:
+{{ toYaml .Values.hbase.resources | indent 10 }}
+        #readinessProbe:
+        #  httpGet:
+        #    path: /
+        #    port: 16030
+        #  initialDelaySeconds: 5
+        #  periodSeconds: 3
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 16030
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+        volumeMounts:
+        - name: hbase-config
+          mountPath: /tmp/hbase-config
+      volumes:
+      - name: hbase-config
+        configMap:
+          name: {{ template "hbase.name" . }}-hbase-configmap

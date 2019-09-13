@@ -1,0 +1,12 @@
+apiVersion: v1
+appVersion: 1.2.12
+description: The Apache Hbase
+home: https://hadoop.apache.org/
+icon: http://hadoop.apache.org/images/hbase-logo.jpg
+maintainers:
+- email: xiongjunfeng@haocang.com
+  name: xiongjunfeng
+name: hbase
+sources:
+- https://github.com/apache/hbase
+version: 1.0.0

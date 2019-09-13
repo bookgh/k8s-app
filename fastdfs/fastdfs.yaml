@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - name: tracker
-        image: 192.168.2.30/kubernetes/fastdfs:5.11
+        image: 192.168.0.75/kubernetes/fastdfs:5.11
         env:
         - name: FASTDFS_MODE
           value: tracker
@@ -92,7 +92,7 @@ spec:
     spec:
       containers:
       - name: storage
-        image: 192.168.2.30/kubernetes/fastdfs:5.11
+        image: 192.168.0.75/kubernetes/fastdfs:5.11
         env:
         - name: FASTDFS_MODE
           value: "storage"

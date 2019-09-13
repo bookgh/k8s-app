@@ -1,0 +1,21 @@
+image:
+  repository: 192.168.0.75/kubernetes/hbase
+  tag: 1.2.12
+  pullPolicy: Always     # IfNotPresent
+
+hbase:
+  replicas: 3
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "10m"
+    limits:
+      memory: "2048Mi"
+      cpu: "1000m"
+
+  hadoop:
+    rootdir: hadoop-hadoop-hdfs-nn:9000
+
+  zookeeper:
+    quorum: zk-0.zk-svc.default.svc.cluster.local,zk-1.zk-svc.default.svc.cluster.local,zk-2.zk-svc.default.svc.cluster.local 

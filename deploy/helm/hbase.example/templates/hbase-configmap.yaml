@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "hbase.name" . }}-hbase-configmap
+  labels:
+    app: {{ template "hbase.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  bootstrap.sh: |
+    #!/bin/bash
+
+    set -x
+ 
+    : ${HBASE_HOME:=/usr/local/hbase}
+
+    # disable default zookeeper
+    sed -i 's/# export HBASE_MANAGES_ZK=true/export HBASE_MANAGES_ZK=false/' $HBASE_HOME/conf/hbase-env.sh
+
+    . $HBASE_HOME/conf/hbase-env.sh
+
+    # Directory to find config artifacts
+    CONFIG_DIR="/tmp/hbase-config"
+
+    # Copy config files from volume mount
+
+    for f in hbase-site.xml; do
+      if [[ -e ${CONFIG_DIR}/$f ]]; then
+        cp ${CONFIG_DIR}/$f $HBASE_HOME/conf/$f
+      else
+        echo "ERROR: Could not find $f in $CONFIG_DIR"
+        exit 1
+      fi
+    done
+
+    if [[ "${HOSTNAME}" =~ "hbase-master" ]]; then
+      $HBASE_HOME/bin/hbase-daemon.sh --config $HBASE_HOME/conf start master
+    fi
+
+    if [[ "${HOSTNAME}" =~ "hbase-rs" ]]; then
+      #  wait up to 30 seconds for namenode
+      (while [[ $count -lt 15 && -z `curl -sf http://{{ template "hbase.name" . }}-hbase-master:16010` ]]; do ((count=count+1)) ; echo "Waiting for {{ template "hbase.name" . }}-hbase-master" ; sleep 2; done && [[ $count -lt 15 ]])
+      [[ $? -ne 0 ]] && echo "Timeout waiting for hbase-master, exiting." && exit 1
+
+      $HBASE_HOME/bin/hbase-daemon.sh --config $HBASE_HOME/conf start regionserver
+    fi
+
+    if [[ $1 == "-d" ]]; then
+      until find ${HBASE_HOME}/logs -mmin -1 | egrep -q '.*'; echo "`date`: Waiting for logs..." ; do sleep 2 ; done
+      tail -F ${HBASE_HOME}/logs/* &
+      while true; do sleep 1000; done
+    fi
+
+    if [[ $1 == "-bash" ]]; then
+      /bin/bash
+    fi
+
+  hbase-site.xml: |
+    <?xml version="1.0"?>
+    <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+    <configuration>
+      <property>
+        <name>hbase.master</name>
+        <value>{{ template "hbase.name" . }}-hbase-master:16010</value>
+      </property>
+      <property>
+        <name>zookeeper.znode.parent</name>
+        <value>/hbase</value>
+      </property>
+      <property>
+        <name>hbase.rootdir</name>
+        <value>hdfs://{{ .Values.hbase.hadoop.rootdir }}/hbase</value>
+      </property>
+      <property>
+        <name>hbase.cluster.distributed</name>
+        <value>true</value>
+      </property>
+      <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>{{ .Values.hbase.zookeeper.quorum }}</value>
+      </property>
+      <property>
+        <name>hbase.zookeeper.property.ClientPort</name>
+        <value>2181</value>
+      </property>
+    </configuration>

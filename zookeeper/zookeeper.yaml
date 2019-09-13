@@ -80,7 +80,7 @@ spec:
       containers:
       - name: k8szk
         imagePullPolicy: Always
-        image: 192.168.2.30/kubernetes/zookeeper:3.4.14-debian
+        image: 192.168.0.75/kubernetes/zookeeper:3.4.14-debian
         resources:
           requests:
             memory: "1Gi"

@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: kafka-manager
-        image: 192.168.2.30/kubernetes/kafka-manager:latest
+        image: 192.168.0.75/kubernetes/kafka-manager:latest
         ports:
         - name: http
           containerPort: 9000
