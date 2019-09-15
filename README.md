@@ -28,9 +28,9 @@ sh ./install-nfs.sh
 
 ```she
 # 修改文件中 IP 地址为 NfsServer IP
-NFS_SRV=192.168.0.71
+NFS_SRV=192.168.2.71
 curl -O  https://raw.githubusercontent.com/bookgh/k8s-app/master/deploy/nfs/dynamic-nfs-pv.yaml
-sed -i "s#192.168.2.71#$NFS_SRV#" ./dynamic-nfs-pv.yaml
+sed -i "s#192.168.0.71#$NFS_SRV#" ./dynamic-nfs-pv.yaml
 
 # 创建动态PV
 kubectl apply -f ./dynamic-nfs-pv.yaml
