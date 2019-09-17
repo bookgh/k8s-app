@@ -85,7 +85,7 @@ spec:
         - -c
         - nimbus.seeds=["storm-0.storm-svc.default.svc.cluster.local","storm-1.storm-svc.default.svc.cluster.local","storm-2.storm-svc.default.svc.cluster.local"] 
         volumeMounts:
-        - name: storm-data
+        - name: data
           mountPath: /apache-storm-1.2.2/storm-local/       
       - name: storm-supervisor
         imagePullPolicy: IfNotPresent
@@ -112,7 +112,7 @@ spec:
         - -c
         - nimbus.seeds=["storm-0.storm-svc.default.svc.cluster.local","storm-1.storm-svc.default.svc.cluster.local","storm-2.storm-svc.default.svc.cluster.local"]
         volumeMounts:
-        - name: storm-data
+        - name: data
           mountPath: /apache-storm-1.2.2/storm-local/
 
       - name: storm-ui
