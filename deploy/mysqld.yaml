@@ -23,11 +23,38 @@ data:
     [mysqld]
     log-bin
     skip_name_resolve
+
+    # add mango values
+    max_connections=3600
+    character_set_server=utf8
+    explicit_defaults_for_timestamp
+    disable-partition-engine-check
+    lower_case_table_names=1
+    wait_timeout=30000
+    interactive_timeout=30000
+    sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+    default-storage-engine=INNODB
+    symbolic-links=0
+    explicit_defaults_for_timestamp=true
+
   slave.cnf: |
     # Apply this config only on slaves.
     [mysqld]
     super-read-only
     skip_name_resolve
+
+    # add mango values
+    max_connections=3600
+    character_set_server=utf8
+    explicit_defaults_for_timestamp
+    disable-partition-engine-check
+    lower_case_table_names=1
+    wait_timeout=30000
+    interactive_timeout=30000
+    sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+    default-storage-engine=INNODB
+    symbolic-links=0
+    explicit_defaults_for_timestamp=true
   
   server-id.cnf: |
     [mysqld]
@@ -39,6 +66,21 @@ data:
     mysql -h 127.0.0.1 --verbose -e "CREATE USER IF NOT EXISTS '${MYSQL_REPLICATION_USER}' IDENTIFIED BY '${MYSQL_REPLICATION_PASSWORD}';"
     mysql -h 127.0.0.1 --verbose -e "GRANT PROCESS, RELOAD, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO '${MYSQL_REPLICATION_USER}';"
     mysql -h 127.0.0.1 --verbose -e "FLUSH PRIVILEGES;"
+    
+    mysql -h 127.0.0.1 --verbose -e "
+    CREATE DATABASE IF NOT EXISTS loong;
+    CREATE DATABASE IF NOT EXISTS mg_backstage;
+    CREATE DATABASE IF NOT EXISTS mg_base;
+    CREATE DATABASE IF NOT EXISTS mg_box;
+    CREATE DATABASE IF NOT EXISTS mg_build;
+    CREATE DATABASE IF NOT EXISTS mg_equipment;
+    CREATE DATABASE IF NOT EXISTS mg_gateway;
+    CREATE DATABASE IF NOT EXISTS mg_inventory;
+    CREATE DATABASE IF NOT EXISTS mg_job;
+    CREATE DATABASE IF NOT EXISTS mg_message;
+    CREATE DATABASE IF NOT EXISTS mg_patrol;
+    CREATE DATABASE IF NOT EXISTS mg_uaa;
+    CREATE DATABASE IF NOT EXISTS mg_voice;"
 
 ---
 apiVersion: v1
