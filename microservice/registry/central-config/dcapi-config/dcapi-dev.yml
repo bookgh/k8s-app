@@ -1,0 +1,30 @@
+# ===================================================================
+# Application specific properties
+# Add your own application properties here, see the ApplicationProperties class
+# to have type-safe configuration, like in the JHipsterProperties above
+#
+# More documentation is available at:
+# http://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+eureka:
+    client:
+        service-url:
+            defaultZone: http://admin:${jhipster.registry.password}@jhipster-registry:8761/eureka/
+
+spring:
+    cloud:
+        stream:
+            kafka:
+                binder:
+                    brokers: kafka
+                    zk-nodes: zookeeper
+                    default-zk-port: 2181
+                    default-broker-port: 9092
+    data:
+        mongodb:
+            uri: mongodb://mongodb:27017
+            database: datacollect
+
+server:
+    port: 8088

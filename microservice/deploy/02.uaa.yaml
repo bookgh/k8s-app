@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: uaa-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uaa
+  template:
+    metadata:
+      labels:
+        app: uaa
+    spec:
+      containers:
+        - name: uaa
+          image: 192.168.2.30/mango-11f/uaa:1.0.2.0011
+          ports:
+            - containerPort: 8020
+          env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: prod,swagger
+          - name: SECURITY_USER_NAME
+            value: admin
+          - name: SECURITY_USER_PASSWORD
+            value: admin
+          - name: JHIPSTER_REGISTRY_PASSWORD
+            value: admin
+          - name: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
+            value: http://admin:$${jhipster.registry.password}@jhipster-registry:8761/eureka
+          - name: SPRING_CLOUD_CONFIG_URI
+            value: http://admin:$${jhipster.registry.password}@jhipster-registry:8761/config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: uaa
+spec:
+  ports:
+    - port: 8020
+      targetPort: 8020
+      nodePort: 28020
+  selector:
+    app: uaa
+  type: NodePort

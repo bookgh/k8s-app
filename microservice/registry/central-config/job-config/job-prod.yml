@@ -1,0 +1,23 @@
+# ===================================================================
+# Spring Boot configuration for the "prod" profile.
+#
+# This configuration overrides the application.yml file.
+#
+# More information on profiles: http://www.jhipster.tech/profiles/
+# More information on configuration properties: http://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+eureka:
+    client:
+        service-url:
+            defaultZone: http://admin:${jhipster.registry.password}@jhipster-registry:8761/eureka/
+
+spring:
+    datasource:
+        type: com.zaxxer.hikari.HikariDataSource 
+        url: jdbc:mysql://mysql-mysqlha-0.mysql-mysqlha:3306/mg_job?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+        username: root
+        password: zaq1@WSX
+
+application:
+    hazelcastGroupname: mango-prod

@@ -1,0 +1,36 @@
+# ===================================================================
+# Application specific properties
+# Add your own application properties here, see the ApplicationProperties class
+# to have type-safe configuration, like in the JHipsterProperties above
+#
+# More documentation is available at:
+# http://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+eureka:
+    client:
+        service-url:
+            defaultZone: http://admin:${jhipster.registry.password}@jhipster-registry:8761/eureka/
+
+application:
+    mqtt:
+        inbound:
+            # url: tcp://sh.hc-yun.com:6308 #EMQTT TCP地址
+            url: tcp://emqx:1883 #EMQTT TCP地址
+            topics: $queue/Topic/flexem/fbox/300116040012/system/MonitorData
+            username: admin
+            password: public
+
+spring:
+    cloud:
+        stream:
+            kafka:
+                binder:
+                    brokers: kafka
+                    zk-nodes: zookeeper
+                    default-zk-port: 2181
+                    default-broker-port: 9092
+    data:
+        mongodb:
+            uri: mongodb://mongodb:27017
+            database: datacollect

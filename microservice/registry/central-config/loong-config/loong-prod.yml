@@ -1,0 +1,35 @@
+# ===================================================================
+# Spring Boot configuration for the "prod" profile.
+#
+# This configuration overrides the application.yml file.
+#
+# More information on profiles: http://www.jhipster.tech/profiles/
+# More information on configuration properties: http://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+spring:
+    datasource:
+        url: jdbc:mysql://mysql-mysqlha-0.mysql-mysqlha:3306/loong?useUnicode=true&characterEncoding=utf8&useSSL=false&zeroDateTimeBehavior=convertToNull
+        username: root
+        password: zaq1@WSX
+
+    kafka:
+        consumer:
+            bootstrap-servers: kafka:9092
+
+application:
+    tag-key: QoD
+    tag-value: U
+    opentsdb-url: http://opentsdb:14242
+    hazelcastGroupname: mango-prod
+    control-interval-time: 10
+    QuartzDB:
+      driver: com.mysql.jdbc.Driver
+      url: jdbc:mysql://mysql-mysqlha-0.mysql-mysqlha:3306/mg_job?useUnicode=true&characterEncoding=utf-8
+      user: root
+      password: zaq1@WSX
+      maxConnections: 5
+    report:
+        url: http://webrpt.hc-yun.com:8090/WebReport/ReportServer?op=fs_load&cmd=sso&fr_username=%s&fr_password=%s
+        username: admin
+        password: '@123Abc'

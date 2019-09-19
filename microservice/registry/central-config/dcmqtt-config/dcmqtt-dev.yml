@@ -1,0 +1,32 @@
+# ===================================================================
+# Application specific properties
+# Add your own application properties here, see the ApplicationProperties class
+# to have type-safe configuration, like in the JHipsterProperties above
+#
+# More documentation is available at:
+# http://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+
+application:
+    mqtt:
+        inbound:
+            url: tcp://emqx:1883 #EMQTT TCP地址
+            topics: $queue/Topic/flexem/fbox/+/system/MonitorData,
+                    $queue/Topic/haocang/mango/datacollect/+/Data
+            username: admin
+            password: zaq1@WSX
+
+spring:
+    cloud:
+        stream:
+            kafka:
+                binder:
+                    brokers: kafka
+                    zk-nodes: zookeeper
+                    default-zk-port: 2181
+                    default-broker-port: 9092
+    data:
+        mongodb:
+            uri: mongodb://mongodb:27017
+            database: datacollect

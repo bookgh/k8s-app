@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: registry-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registry
+  template:
+    metadata:
+      labels:
+        app: registry
+    spec:
+      containers:
+        - name: registry
+          image: 192.168.2.30/test/registry:1.0.0.0002
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8761
+          env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: prod,native,swagger
+          - name: SECURITY_USER_NAME
+            value: admin
+          - name: SECURITY_USER_PASSWORD
+            value: admin
+          - name: JHIPSTER_REGISTRY_PASSWORD
+            value: admin
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jhipster-registry
+spec:
+  ports:
+    - port: 8761
+      targetPort: 8761
+      nodePort: 28761
+  selector:
+    app: registry
+  type: NodePort

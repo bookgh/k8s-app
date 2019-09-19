@@ -1,0 +1,31 @@
+# ===================================================================
+# Spring Boot configuration for the "dev" profile.
+#
+# This configuration overrides the application.yml file.
+#
+# More information on profiles: http://www.jhipster.tech/profiles/
+# More information on configuration properties: http://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+logging:
+    level:
+        ROOT: ERROR
+        com.hc.alarm: ERROR
+        io.github.jhipster: ERROR
+
+spring:
+    datasource:
+        url: jdbc:mysql://10.240.1.32:3306/loong?useUnicode=true&characterEncoding=utf8&useSSL=false&zeroDateTimeBehavior=convertToNull
+        username: root
+        password: zaq1@WSX
+     kafka:
+        consumer:
+            bootstrap-servers: 10.240.1.36:9092,10.240.1.37:9092,10.240.1.38:9092
+application:
+    tag-key: QoD
+    tag-value: U
+    opentsdb-url: http://10.240.1.37:14242
+
+
+
+        

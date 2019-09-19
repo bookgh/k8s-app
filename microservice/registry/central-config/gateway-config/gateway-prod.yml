@@ -1,0 +1,17 @@
+# ===================================================================
+# Spring Boot configuration for the "prod" profile.
+#
+# This configuration overrides the application.yml file.
+#
+# More information on profiles: http://www.jhipster.tech/profiles/
+# More information on configuration properties: http://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+spring:
+    datasource:
+        url: jdbc:mysql://mysql-mysqlha-0.mysql-mysqlha:3306/mg_gateway?useUnicode=true&characterEncoding=utf8&useSSL=false
+        username: root
+        password: zaq1@WSX
+
+application:
+    hazelcastGroupname: mango-prod
