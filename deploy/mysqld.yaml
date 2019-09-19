@@ -25,6 +25,7 @@ data:
     skip_name_resolve
 
     # add mango values
+    log_bin_trust_function_creators=1
     max_connections=3600
     character_set_server=utf8
     explicit_defaults_for_timestamp
