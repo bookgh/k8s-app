@@ -1,0 +1,20 @@
+alertmanager:
+  persistentVolume:
+    enabled: true
+  service:
+    type: NodePort
+    nodePort: 39001
+
+server:
+  persistentVolume:
+    enabled: true
+  service:
+    type: NodePort
+    nodePort: 39000
+
+pushgateway:
+  enabled: false
+
+kubeStateMetrics:
+  image:
+    repository: mirrorgooglecontainers/kube-state-metrics
