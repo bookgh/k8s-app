@@ -1,7 +1,7 @@
 FROM alpine:latest
 
 ENV TZ Asia/Shanghai
-ENV NGINX_VER 1.15.3
+ENV NGINX_VER 1.14.2
 ENV FASTDFS_VER V5.11
 ENV LIBFASTCOMMON_VER V1.0.39
 ENV BUILD_ROOT /opt
@@ -11,10 +11,10 @@ ENV TRACKER_DATA /data/tracker
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
    && apk add --no-cache --virtual .build-deps gcc libc-dev make openssl-dev pcre-dev zlib-dev linux-headers libxslt-dev gd-dev geoip-dev perl-dev libedit-dev mercurial bash alpine-sdk findutils git \
    && cd $BUILD_ROOT \
-   && git clone --branch $LIBFASTCOMMON_VER --depth 1 https://github.com/happyfish100/libfastcommon.git ${BUILD_ROOT}/libfastcommon \
+   && git clone https://github.com/happyfish100/libfastcommon.git ${BUILD_ROOT}/libfastcommon --depth 1 \
    && cd ${BUILD_ROOT}/libfastcommon && ./make.sh && ./make.sh install \
    && cd ${BUILD_ROOT} \
-   && git clone --branch $FASTDFS_VER --depth 1 https://github.com/happyfish100/fastdfs.git ${BUILD_ROOT}/fastdfs \
+   && git clone https://github.com/happyfish100/fastdfs.git ${BUILD_ROOT}/fastdfs --depth 1 \
    && cd ${BUILD_ROOT}/fastdfs && ./make.sh && ./make.sh install \
    && cd ${BUILD_ROOT}/fastdfs/conf/ \
    && cp http.conf mime.types anti-steal.jpg /etc/fdfs/ \
